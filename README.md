@@ -1,7 +1,9 @@
 # Projekt- Kabet mängiv robot Kalev
-## Projekti liikmed:
+
+## Projekti liikmed
+
 * Albert Unn
-* 
+* Karl Väärtnõu
 *
 *
 
