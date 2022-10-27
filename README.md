@@ -4,7 +4,7 @@
 
 * Albert Unn
 * Karl Väärtnõu
-*
+* Karl-Mattias Moor
 *
 
 ## Projekti juhendaja- Eva Mõtshärg
