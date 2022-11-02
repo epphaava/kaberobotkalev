@@ -29,6 +29,7 @@
 
 | Elektromagnet | | 0 | 1 | 0 | 1 |
 
-
+## Link to Trello:
+https://trello.com/invite/b/72wEh3fa/ATTI96578b2b7e0681afb163ae4c90d2dfa2F54F2999/project-board
 
 ## Projekti juhendaja- Eva Mõtshärg
