@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 
+from BoardDetection.camera import Camera
+from BoardDetection.checkers_board import CheckersBoard
+
 camera = cv2.VideoCapture
 lH = 0
 lS = 0
@@ -57,6 +60,7 @@ def updateKernelsize(new):
         kernelsize = new
     cv2.setTrackbarPos("Kernel Size", "BGR", kernelsize)
 
+
 def main():
     try:
         cv2.namedWindow("Thresholded")
@@ -79,11 +83,12 @@ def main():
         blobparams.filterByConvexity = False
         blobparams.minDistBetweenBlobs = 5
         detector = cv2.SimpleBlobDetector_create(blobparams)
+        checkerscam = Camera(camera)
         while True:
-            ret, frame = camera.read()
-            kernel = (kernelsize,kernelsize)
+            frame = checkerscam.current_chessboard_frame().img
+            kernel = (kernelsize, kernelsize)
             frame = cv2.blur(frame, kernel)
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            hsv = frame
             cv2.imshow("HSV", hsv)
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
@@ -97,7 +102,9 @@ def main():
                     keypoint.pt[0]), int(keypoint.pt[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             frame = cv2.drawKeypoints(
                 frame, keypoints, None, (0, 255, 0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
+            height, width = frame.shape[:2]
+            cv2.line(frame, (int(width / 2), 0), (int(width / 2), height), (255, 0, 0), 2)
+            cv2.line(frame, (0, int(height / 2)), (width, int(height / 2)), (255, 0, 0), 2)
             cv2.imshow("BGR", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break

@@ -18,7 +18,7 @@ def get_checkersboard_perspective_transform():
 
 def calibrate_camera():
     board_size = (7, 7)
-    camera = cv2.VideoCapture(1,cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
     _, frame = camera.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -26,42 +26,26 @@ def calibrate_camera():
                                                flags=cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_ADAPTIVE_THRESH)
     if found:
         z = corners.reshape((49, 2))
-        x_train = np.array(list(product(np.linspace(-3, 3, 7), np.linspace(-3, 3, 7))))
-
-        poly = PolynomialFeatures(degree=4)
-        x_train = poly.fit_transform(x_train)
-
-        m_x = LinearRegression()
-        m_x.fit(x_train, z[:, 0])
-
-        m_y = LinearRegression()
-        m_y.fit(x_train, z[:, 1])
-
-        def predict(i, j):
-            features = poly.fit_transform(np.array([i, j]).reshape(1, -1))
-            return m_x.predict(features), m_y.predict(features)
-
+        cv2.drawChessboardCorners(frame, board_size, corners, found)
+        cv2.imshow("corners", frame)
+        cv2.waitKey(0)
+        print(z)
         p = []
         q = []
+        p.append(z[0])
+        q.append((60.0, 60.0))
 
-        p.append(predict(-4.0, -4.0))
-        q.append((0.0, 0.0))
+        p.append(z[6])
+        q.append((420, 60))
 
-        p.append(predict(-4.0, 4.0))
-        q.append((0.0, 480.0))
+        p.append(z[42])
+        q.append((60, 420))
 
-        p.append(predict(4.0, -4.0))
-        q.append((480.0, 0.0))
-
-        p.append(predict(4.0, 4.0))
-        q.append((480.0, 480.0))
+        p.append(z[48])
+        q.append((420, 420.0))
 
         q = np.array(q, np.float32)
         p = np.array(p, np.float32).reshape(q.shape)
-        ind = np.lexsort((p[:, 1], p[:, 0]))
-        p = p[ind]
-
-
         m = cv2.getPerspectiveTransform(p, q)
         np.save(perspective_transform_path, m)
 
