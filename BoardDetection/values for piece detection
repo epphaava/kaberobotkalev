@@ -1,0 +1,10 @@
+red(hsv):
+low 73,0,119
+
+high 107 255 255
+
+green(hsv):
+low 114, 146 ,125
+high 141, 176, 149
+
+kernelsize = 9
