@@ -11,9 +11,9 @@ def detectcolor(sq):
     thresholded_red = cv2.inRange(img, RED_LOW_VALUES, RED_HIGH_VALUES)
     thresholded_green = cv2.inRange(img, GREEN_LOW_VALUES, GREEN_HIGH_VALUES)
     if cv2.countNonZero(thresholded_red) > 0:
-        return "red"
+        return "x"
     if cv2.countNonZero(thresholded_green) > 0:
-        return "green"
+        return "o"
     return "-"
 
 

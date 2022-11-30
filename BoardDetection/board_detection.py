@@ -17,7 +17,7 @@ SQUARE_SIZE = 60
 
 def init():
     global camera
-    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
 def main():
     try:
@@ -28,7 +28,7 @@ def main():
             checkersframe = checkerscam.current_chessboard_frame()
             cv2.imshow("checkersframe", checkersframe.img)
             laud = checkerscam.current_board()
-            f = open("abi.txt", "a")
+            f = open("abi.txt", "w")
             f.writelines([f"{line}" for line in laud])
             f.close()
 

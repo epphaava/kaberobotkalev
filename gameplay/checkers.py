@@ -18,7 +18,7 @@ class Checkers:
       for y in range(self.size):
 
         # boardil märgitud roboti nupud "x" ja vastase nupud "o"
-        if self.board[x][y].equals('x'):
+        if self.board[x][y] == 'x':
           self.getPriority(x, y)
     file_num = 1
     if not os.path.isdir("./moves"):
@@ -33,6 +33,8 @@ class Checkers:
     for x in range(len(self.best_moves)):
         with open('./moves/'+str(file_num+x)+".json", 'w') as outfile:
             json.dump(self.best_moves[x], outfile)
+
+    print("best moves: ", self.best_moves)
     return self.best_moves
 
   def getPriority(self,x,y):
@@ -52,21 +54,21 @@ class Checkers:
       capture_priority *= len(captures) * 10
 
     # leiame pikima nuppudest koosneva diagonaali
-    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1].equals('-')):
-      top_left_priority += self.longest_line(x-1, y-1)
-    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1].equals('-')):
-      top_right_priority += self.longest_line(x-1, y+1)
+    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1] == '-'):
+      top_left_priority += self.longestLine(x-1, y-1)
+    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1] == '-'):
+      top_right_priority += self.longestLine(x-1, y+1)
 
      # kuhu poole on safe liikuda, ei sööda ära
-    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1].equals('-') and self.isSafe(x-1, y-1, x, y)):
+    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1] == '-' and self.isSafe(x-1, y-1, x, y)):
       top_left_priority += 3
-    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1].equals('-') and self.isSafe(x-1, y+1, x, y)):
+    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1] == '-' and self.isSafe(x-1, y+1, x, y)):
       top_right_priority += 3
 
     # give priority to middle of board moves
-    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1].equals('-') and y > 2 and y < 5):
+    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1] == '-' and y > 2 and y < 5):
       top_left_priority += 1
-    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1].equals('-') and y > 2 and y < 5):
+    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1] == '-' and y > 2 and y < 5):
       top_right_priority += 1
 
     # valime mis siis parim edasine tegevus
@@ -83,7 +85,7 @@ class Checkers:
       self.best_moves = [{"current_position": str(x)+str(y),"goal_position": str(x-1)+str(y-1)}]
       if(x==1): self.best_moves.append({"current_position": str(x-1)+str(y-1),"goal_position": "*crown"})
       self.best_priority_score = top_left_priority
-    
+
     # kui mõistlik liikuda paremale
     elif(bestMove == top_right_priority and bestMove > self.best_priority_score):
       self.best_moves = [{"current_position": str(x)+str(y),"goal_position": str(x-1)+str(y+1)}]
@@ -95,10 +97,10 @@ class Checkers:
   # kui käia kohale (x,y), kas see on safe move
   def isSafe(self,x,y,prev_x,prev_y):
     # kõik muu intuitiivne, ei tea kas ma väsinud lihtsalt, aga ei saa aru miks see or seal tingimustes
-    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1].equals('o') and self.isPosition(x+1, y+1)and (self.board[x+1][y+1].equals('-') or (x+1 == prev_x and y+1 == prev_y))):
+    if(self.isPosition(x-1, y-1) and self.board[x-1][y-1] == 'o' and self.isPosition(x+1, y+1)and (self.board[x+1][y+1] == '-' or (x+1 == prev_x and y+1 == prev_y))):
       return False
 
-    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1].equals('o') and self.isPosition(x+1, y-1)and (self.board[x+1][y-1].equals('-') or (x+1 == prev_x and y-1 == prev_y))):
+    if(self.isPosition(x-1, y+1) and self.board[x-1][y+1] == 'o' and self.isPosition(x+1, y-1)and (self.board[x+1][y-1] == '-' or (x+1 == prev_x and y-1 == prev_y))):
       return False
     return True
 
@@ -112,7 +114,7 @@ class Checkers:
     # top left to bottom right jagatud kaheks
 
     # center to top left
-    while (self.isPosition(pos_x-1, pos_y-1) and self.board[pos_x-1][pos_y-1].equals('x')):
+    while (self.isPosition(pos_x-1, pos_y-1) and self.board[pos_x-1][pos_y-1] == 'x'):
       longest_left_to_right+=1
       pos_x -= 1
       pos_y -= 1
@@ -120,7 +122,7 @@ class Checkers:
     pos_y = y
 
     # center to bottom right
-    while (self.isPosition(pos_x+1, pos_y+1) and self.board[pos_x+1][pos_y+1].equals('x')):
+    while (self.isPosition(pos_x+1, pos_y+1) and self.board[pos_x+1][pos_y+1] == 'x'):
       longest_left_to_right+=1
       pos_x += 1
       pos_y += 1
@@ -129,16 +131,16 @@ class Checkers:
 
     # top right to bottom left jagatud kaheks
 
-    # center to top right 
-    while (self.isPosition(pos_x-1, pos_y+1) and self.board[pos_x-1][pos_y+1].equals('x')):
+    # center to top right
+    while (self.isPosition(pos_x-1, pos_y+1) and self.board[pos_x-1][pos_y+1] == 'x'):
       longest_right_to_left+=1
       pos_x -= 1
       pos_y += 1
     pos_x = x
     pos_y = y
-            
+
     # center to bottom left
-    while (self.isPosition(pos_x+1, pos_y-1) and self.board[pos_x+1][pos_y-1].equals('x')):
+    while (self.isPosition(pos_x+1, pos_y-1) and self.board[pos_x+1][pos_y-1] == 'x'):
         longest_right_to_left+=1
         pos_x += 1
         pos_y -= 1
@@ -154,10 +156,10 @@ class Checkers:
   # kas saab etteantud suunas nuppu võtta?
   def canCapture(self,x,y,direction):
     if (direction == "top left"):
-      if(self.isPosition(x-1,y-1) and self.isPosition(x-2,y-2) and self.board[x-1][y-1].equals('o') and self.board[x-2][y-2].equals('-')):
+      if(self.isPosition(x-1,y-1) and self.isPosition(x-2,y-2) and self.board[x-1][y-1] == 'o' and self.board[x-2][y-2] == '-'):
         return True
     elif (direction == "top right"):
-      if (self.isPosition(x-1,y+1) and self.isPosition(x-2, y+2) and self.board[x-1][y+1].equals('o') and self.board[x-2][y+2].equals('-')):
+      if (self.isPosition(x-1,y+1) and self.isPosition(x-2, y+2) and self.board[x-1][y+1] == 'o' and self.board[x-2][y+2] == '-'):
         return True
     return False
 

@@ -7,11 +7,12 @@ def board_array():
     k = 0
     for i in x:
         row.append(i)
-        if k == 8:
-            row = []
+        if k == 7:
             k = 0
             state.append(row)
-        k += 1
+            row = []
+        else:
+            k += 1
     print(state)
     return state
 
