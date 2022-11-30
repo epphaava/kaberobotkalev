@@ -1,7 +1,7 @@
 import cv2
-import config
-import image_processing
-import checkers
+import gameplay.config as config
+import gameplay.image_processing as image_processing
+import gameplay.checkers as checkers
 
 camera = cv2.VideoCapture(0)
 
