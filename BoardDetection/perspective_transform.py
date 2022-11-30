@@ -16,10 +16,8 @@ def get_checkersboard_perspective_transform():
         print("need to calibrate camera")
 
 
-def calibrate_camera():
+def calibrate_camera(camera):
     board_size = (7, 7)
-    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-
     _, frame = camera.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     found, corners = cv2.findChessboardCorners(gray, board_size,
@@ -27,7 +25,6 @@ def calibrate_camera():
     if found:
         z = corners.reshape((49, 2))
         cv2.drawChessboardCorners(frame, board_size, corners, found)
-        cv2.imshow("corners", frame)
         cv2.waitKey(0)
         print(z)
         p = []

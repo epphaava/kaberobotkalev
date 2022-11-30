@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 from BoardDetection.checkers_board import CheckersBoard
 from BoardDetection.constants import BOARD_SIZE, GREEN_LOW_VALUES, GREEN_HIGH_VALUES, RED_LOW_VALUES, RED_HIGH_VALUES
@@ -24,6 +23,7 @@ class Camera:
 
     def current_chessboard_frame(self):
         _, frame = self._capture.read()
+
         frame = cv2.blur(frame, (3, 3))
         m = get_checkersboard_perspective_transform()
         img = cv2.warpPerspective(frame, m, (BOARD_SIZE, BOARD_SIZE))
