@@ -45,7 +45,7 @@ def updatehV(new):
 
 def init():
     global camera
-    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 
 kernelsize = 3

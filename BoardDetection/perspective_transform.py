@@ -18,7 +18,7 @@ def get_checkersboard_perspective_transform():
 
 def calibrate_camera():
     board_size = (7, 7)
-    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
     _, frame = camera.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
