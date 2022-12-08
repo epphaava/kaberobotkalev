@@ -1,7 +1,7 @@
 from math import floor
 
-from constants import BOARD_SIZE
-from constants import SQUARE_SIZE
+from BoardDetection.constants import BOARD_SIZE
+from BoardDetection.constants import SQUARE_SIZE
 import numpy as np
 import cv2
 

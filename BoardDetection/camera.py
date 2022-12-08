@@ -2,7 +2,7 @@ import cv2
 
 from BoardDetection.checkers_board import CheckersBoard
 from BoardDetection.constants import BOARD_SIZE, GREEN_LOW_VALUES, GREEN_HIGH_VALUES, RED_LOW_VALUES, RED_HIGH_VALUES
-from BoardDetection.perspective_transform import get_checkersboard_perspective_transform
+from perspective_transform import get_checkersboard_perspective_transform
 
 
 def detectcolor(sq):
@@ -39,4 +39,7 @@ class Camera:
         for i in range(64):
             sq = ccf.square_at(i)
             cb[i] = detectcolor(sq)
+        f = open("../BoardDetection/board_array.txt", "w")
+        f.writelines([f"{line}" for line in cb])
+        f.close()
         return cb

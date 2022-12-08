@@ -15,7 +15,6 @@ def get_checkersboard_perspective_transform():
     except IOError:
         print("need to calibrate camera")
 
-
 def calibrate_camera(camera):
     board_size = (7, 7)
     _, frame = camera.read()
@@ -27,6 +26,11 @@ def calibrate_camera(camera):
         cv2.drawChessboardCorners(frame, board_size, corners, found)
         cv2.waitKey(0)
         print(z)
+
+        f = open("../moving_pieces/corners.txt", "w")
+        f.writelines([f"{line}\n" for line in z])
+        f.close()
+
         p = []
         q = []
         p.append(z[0])
@@ -45,6 +49,7 @@ def calibrate_camera(camera):
         p = np.array(p, np.float32).reshape(q.shape)
         m = cv2.getPerspectiveTransform(p, q)
         np.save(perspective_transform_path, m)
+
 
 
 def main():
