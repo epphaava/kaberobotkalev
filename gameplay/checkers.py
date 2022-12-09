@@ -20,7 +20,9 @@ class Checkers:
 
                 # boardil märgitud roboti nupud "x" ja vastase nupud "o"
                 if self.board[x][y] == 'x':
-                    self.get_priority(x, y)
+                    self.get_priority(x, y, False)
+                elif self.board[x][y] == 'y':
+                    self.get_priority(x, y, True)
         file_num = 1
         if not os.path.isdir("./moves"):
             try:
@@ -38,39 +40,80 @@ class Checkers:
         print("best moves: ", self.best_moves)
         return self.best_moves
 
-    def get_priority(self, x, y):
-        capture_priority = 1
-        top_left_priority = 1
-        top_right_priority = 1
+    def get_priority(self, x, y, is_crown):
+        if not is_crown:
+            capture_priority = 1
+            top_left_priority = 1
+            top_right_priority = 1
 
-        # hiljem valime priority score järgi:
-        # capture chain = 10*n
-        # crowning = 29 (kui kunagi otsustame seda teha)
-        # keeping a line = 1 * n
-        # safe moves
+            # hiljem valime priority score järgi:
+            # capture chain = 10*n
+            # crowning = 29 (kui kunagi otsustame seda teha)
+            # keeping a line = 1 * n
+            # safe moves
 
-        # leiame pikim käikude järjestuse
-        captures = self.captures(x, y)
-        if len(captures) > 0:
-            capture_priority *= len(captures) * 10
+            # leiame pikim käikude järjestuse
+            captures = self.captures(x, y)
+            if len(captures) > 0:
+                capture_priority *= len(captures) * 10
 
-        # leiame pikima nuppudest koosneva diagonaali
-        if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-':
-            top_left_priority += self.longest_line(x - 1, y - 1)
-        if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
-            top_right_priority += self.longest_line(x - 1, y + 1)
+            # leiame pikima nuppudest koosneva diagonaali
+            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-':
+                top_left_priority += self.longest_line(x - 1, y - 1)
+            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
+                top_right_priority += self.longest_line(x - 1, y + 1)
 
-        # kuhu poole on safe liikuda, ei sööda ära
-        if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and self.is_safe(x - 1, y - 1, x, y):
-            top_left_priority += 3
-        if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and self.is_safe(x - 1, y + 1, x, y):
-            top_right_priority += 3
+            # tammiks saamine
+            if self.is_position(x-1, y-1) and self.board[x-1][y-1] == 0 and x == 1:
+                top_left_priority += 29
+            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == 0 and x == 1:
+                top_right_priority += 29
 
-        # give priority to middle of board moves
-        if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and 2 < y < 5:
-            top_left_priority += 1
-        if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and 2 < y < 5:
-            top_right_priority += 1
+            # kuhu poole on safe liikuda, ei sööda ära
+            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and self.is_safe(x - 1, y - 1, x, y):
+                top_left_priority += 3
+            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and self.is_safe(x - 1, y + 1, x, y):
+                top_right_priority += 3
+
+            # give priority to middle of board moves
+            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and 2 < y < 5:
+                top_left_priority += 1
+            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and 2 < y < 5:
+                top_right_priority += 1
+    # SIIT KÕIK VEEL VALESTI JA TEGEMATA JNE
+        else:
+            crow_capture_priority = 1
+            crown_top_left_priority = 1
+            crown_top_right_priority = 1
+
+            # hiljem valime priority score järgi:
+            # capture chain = 10*n
+            # crowning = 29 (kui kunagi otsustame seda teha)
+            # keeping a line = 1 * n
+            # safe moves
+
+            # leiame pikim käikude järjestuse
+            crown_captures = self.captures(x, y)
+            if len(crown_captures) > 0:
+                crow_capture_priority *= len(crown_captures) * 10
+
+            # leiame pikima nuppudest koosneva diagonaali
+            #if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-':
+                #top_left_priority += self.longest_line(x - 1, y - 1)
+            #if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
+                #top_right_priority += self.longest_line(x - 1, y + 1)
+
+            # kuhu poole on safe liikuda, ei sööda ära
+            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and self.is_safe(x - 1, y - 1, x, y):
+                top_left_priority += 3
+            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and self.is_safe(x - 1, y + 1, x, y):
+                top_right_priority += 3
+
+            # give priority to middle of board moves
+            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and 2 < y < 5:
+                top_left_priority += 1
+            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and 2 < y < 5:
+                top_right_priority += 1
 
         # valime mis siis parim edasine tegevus
         best_move = max(capture_priority, top_left_priority, top_right_priority)

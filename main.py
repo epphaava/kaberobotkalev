@@ -19,6 +19,8 @@ def main():
 
     while True:
 
+        # kaamera vaatab robot poolt, teisel pool istub inimene
+
         ret, frame = camera.read()
         cv2.imshow("test", frame)
 
@@ -34,7 +36,6 @@ def main():
             try:
                 laud = checkerscam.current_board()
                 print(laud)
-
                 next_turn.text_board()
             except Exception as e:
                 print("midagi läks katki ", e)
