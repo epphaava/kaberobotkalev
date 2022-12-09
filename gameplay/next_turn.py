@@ -5,7 +5,7 @@ import gameplay.checkers as checkers
 
 # tagastab board state maatriksina
 def board_array():
-    f = open("../BoardDetection/board_array.txt", "r")
+    f = open("./BoardDetection/board_array.txt", "r")
     x = f.read().strip()
     state = []
     row = []
@@ -20,7 +20,8 @@ def board_array():
             k += 1
     print(state)
 
-    # maatriksi read on kaamera ülemisest ääres alumisse, paremalt vasakule
+    # esimene nr on indeks ülevalt alla (kaamera poolt vaadates)
+    # teine nr on vasakult paremale
 
     return state
 
@@ -30,7 +31,7 @@ def text_board():
     config.current_state = board_array()
 
     current_board = checkers.Checkers(config.current_state)
-    current_board.best_moves()
+    current_board.get_next_move()
 
 if __name__ == "__main__":
     text_board()

@@ -2,8 +2,14 @@ import corners_dict
 
 # use this method to move the piece through corners to the given destination in best_moves
 
+corners = {}
+
 def move(best_moves):
-    corners = corners_dict.to_dict()
+    global corners
+
+    if len(corners) == 0:
+        corners = corners_dict.to_dict()
+
 
 
 

@@ -14,7 +14,7 @@ class Checkers:
         self.best_moves = []
         self.best_priority_score = 0
 
-    def best_moves(self):
+    def get_next_move(self):
         for x in range(self.size):
             for y in range(self.size):
 

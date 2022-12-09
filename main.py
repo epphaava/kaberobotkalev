@@ -32,12 +32,12 @@ def main():
         # press SPACE to get next move of robot
         elif k % 256 == 32:
             try:
-                #laud = checkerscam.current_board()
-                #print(laud)
+                laud = checkerscam.current_board()
+                print(laud)
 
                 next_turn.text_board()
-            except:
-                print("midagi läks katki")
+            except Exception as e:
+                print("midagi läks katki ", e)
 
     camera.release()
     cv2.destroyAllWindows()

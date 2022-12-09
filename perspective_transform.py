@@ -5,7 +5,7 @@ from itertools import product
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
-perspective_transform_path = "checkersboard_perspective_transform.npy"
+perspective_transform_path = "BoardDetection/checkersboard_perspective_transform.npy"
 
 
 def get_checkersboard_perspective_transform():
