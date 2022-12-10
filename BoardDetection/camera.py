@@ -2,7 +2,7 @@ import cv2
 
 from BoardDetection.checkers_board import CheckersBoard
 from BoardDetection.constants import BOARD_SIZE, BLUE_LOW_VALUES, BLUE_HIGH_VALUES, RED_LOW_VALUES, RED_HIGH_VALUES, RED_CROWN_LOW_VALUES, RED_CROWN_HIGH_VALUES, BLUE_CROWN_HIGH_VALUES, BLUE_CROWN_LOW_VALUES
-from perspective_transform import get_checkersboard_perspective_transform
+from BoardDetection.perspective_transform import get_checkersboard_perspective_transform
 
 
 def detectcolor(sq):

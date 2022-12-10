@@ -23,11 +23,9 @@ def calibrate_camera(camera):
                                                flags=cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_ADAPTIVE_THRESH)
     if found:
         z = corners.reshape((49, 2))
-        cv2.drawChessboardCorners(frame, board_size, corners, found)
-        cv2.waitKey(0)
         print(z)
 
-        f = open("../moving_pieces/corners.txt", "w")
+        f = open("./moving_pieces/corners.txt", "w")
         f.writelines([f"{line}\n" for line in z])
         f.close()
 
