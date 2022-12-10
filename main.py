@@ -11,7 +11,7 @@ SQUARE_SIZE = 60
 
 def init():
     global camera
-    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 
 def main():
