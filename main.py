@@ -15,12 +15,10 @@ def init():
 
 
 def main():
-    checkerscam = Camera(camera)
+    #checkerscam = Camera(camera)
 
     while True:
-
-        # kaamera vaatab robot poolt, teisel pool istub inimene
-
+        # camera is on the side of the robot, opposite the human player
         ret, frame = camera.read()
         cv2.imshow("test", frame)
 
@@ -34,11 +32,11 @@ def main():
         # press SPACE to get next move of robot
         elif k % 256 == 32:
             try:
-                laud = checkerscam.current_board()
-                print(laud)
+                #board = checkerscam.current_board()
+                #print(board)
                 next_turn.text_board()
             except Exception as e:
-                print("midagi läks katki ", e)
+                print("something went wrong ", e)
 
     camera.release()
     cv2.destroyAllWindows()

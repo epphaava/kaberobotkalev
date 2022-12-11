@@ -21,10 +21,10 @@ def board_array():
             row = []
         else:
             k += 1
-    print(state)
 
-    # esimene nr on indeks ülevalt alla (kaamera poolt vaadates)
-    # teine nr on vasakult paremale
+    # from the perspective of the robot / camera
+    # first number is the index counting top to bottom
+    # second number is the index conting from left to right
 
     return state
 
