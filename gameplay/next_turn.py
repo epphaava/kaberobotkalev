@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import numpy as np
-import gameplay.config as config
 import gameplay.checkers as checkers
 
 # creating the two arrays current and next position will be stored in

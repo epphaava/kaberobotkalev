@@ -46,7 +46,7 @@ def updatehV(new):
 
 def init():
     global camera
-    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
 
 def main():
@@ -71,47 +71,84 @@ def main():
             calibrate_camera(camera)
         cv2.destroyAllWindows()
         cv2.namedWindow("Thresholded")
-        cv2.createTrackbar("lH", "Thresholded", lH, 255, updatelH)
-        cv2.createTrackbar("lS", "Thresholded", lS, 255, updatelS)
-        cv2.createTrackbar("lV", "Thresholded", lV, 255, updatelV)
-        cv2.createTrackbar("hH", "Thresholded", hH, 255, updatehH)
-        cv2.createTrackbar("hS", "Thresholded", hS, 255, updatehS)
-        cv2.createTrackbar("hV", "Thresholded", hV, 255, updatehV)
-        print("Threshold Blue Pieces")
+        cv2.createTrackbar("lH", "Thresholded", np.load("BoardDetection/robotlowerlimits.npy")[0], 255, updatelH)
+        cv2.createTrackbar("lS", "Thresholded", np.load("BoardDetection/robotlowerlimits.npy")[1], 255, updatelS)
+        cv2.createTrackbar("lV", "Thresholded", np.load("BoardDetection/robotlowerlimits.npy")[2], 255, updatelV)
+        cv2.createTrackbar("hH", "Thresholded", np.load("BoardDetection/robotupperlimits.npy")[0], 255, updatehH)
+        cv2.createTrackbar("hS", "Thresholded", np.load("BoardDetection/robotupperlimits.npy")[1], 255, updatehS)
+        cv2.createTrackbar("hV", "Thresholded", np.load("BoardDetection/robotupperlimits.npy")[2], 255, updatehV)
+        print("Threshold the Robot's Pieces")
         while True:
-            frame = checkers_camera.current_raw_frame()
+            frame = checkers_camera.current_chessboard_frame().img
             cv2.imshow("unthresholded", frame)
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
             thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
             cv2.imshow("Thresholded", thresholded)
             if cv2.waitKey(1) & 0xFF == ord('y'):
-                np.save("BoardDetection/bluelowerlimits", lowerLimits)
-                np.save("BoardDetection/blueupperlimits", upperLimits)
+                np.save("BoardDetection/robotlowerlimits.npy", lowerLimits)
+                np.save("BoardDetection/robotupperlimits.npy", upperLimits)
                 break
         cv2.destroyAllWindows()
         cv2.namedWindow("Thresholded")
-        cv2.createTrackbar("lH", "Thresholded", lH, 255, updatelH)
-        cv2.createTrackbar("lS", "Thresholded", lS, 255, updatelS)
-        cv2.createTrackbar("lV", "Thresholded", lV, 255, updatelV)
-        cv2.createTrackbar("hH", "Thresholded", hH, 255, updatehH)
-        cv2.createTrackbar("hS", "Thresholded", hS, 255, updatehS)
-        cv2.createTrackbar("hV", "Thresholded", hV, 255, updatehV)
-        print("Threshold Red Pieces")
+        cv2.createTrackbar("lH", "Thresholded", np.load("BoardDetection/opponentlowerlimits.npy")[0], 255, updatelH)
+        cv2.createTrackbar("lS", "Thresholded", np.load("BoardDetection/opponentlowerlimits.npy")[1], 255, updatelS)
+        cv2.createTrackbar("lV", "Thresholded", np.load("BoardDetection/opponentlowerlimits.npy")[2], 255, updatelV)
+        cv2.createTrackbar("hH", "Thresholded", np.load("BoardDetection/opponentupperlimits.npy")[0], 255, updatehH)
+        cv2.createTrackbar("hS", "Thresholded", np.load("BoardDetection/opponentupperlimits.npy")[1], 255, updatehS)
+        cv2.createTrackbar("hV", "Thresholded", np.load("BoardDetection/opponentupperlimits.npy")[2], 255, updatehV)
+        print("Threshold the Opponent's Pieces")
         while True:
-            frame = checkers_camera.current_raw_frame()
+            frame = checkers_camera.current_chessboard_frame().img
             cv2.imshow("unthresholded", frame)
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
             thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
             cv2.imshow("Thresholded", thresholded)
             if cv2.waitKey(1) & 0xFF == ord('y'):
-                np.save("BoardDetection/redlowerlimits", lowerLimits)
-                np.save("BoardDetection/redupperlimits", upperLimits)
+                np.save("BoardDetection/opponentlowerlimits.npy", lowerLimits)
+                np.save("BoardDetection/opponentupperlimits.npy", upperLimits)
                 break
-
-
-
+        cv2.destroyAllWindows()
+        cv2.namedWindow("Thresholded")
+        cv2.createTrackbar("lH", "Thresholded", np.load("BoardDetection/robotcrownlowerlimits.npy")[0], 255, updatelH)
+        cv2.createTrackbar("lS", "Thresholded", np.load("BoardDetection/robotcrownlowerlimits.npy")[1], 255, updatelS)
+        cv2.createTrackbar("lV", "Thresholded", np.load("BoardDetection/robotcrownlowerlimits.npy")[2], 255, updatelV)
+        cv2.createTrackbar("hH", "Thresholded", np.load("BoardDetection/robotcrownupperlimits.npy")[0], 255, updatehH)
+        cv2.createTrackbar("hS", "Thresholded", np.load("BoardDetection/robotcrownupperlimits.npy")[1], 255, updatehS)
+        cv2.createTrackbar("hV", "Thresholded", np.load("BoardDetection/robotcrownupperlimits.npy")[2], 255, updatehV)
+        print("Threshold the Robot's Crowns")
+        while True:
+            frame = checkers_camera.current_chessboard_frame().img
+            cv2.imshow("unthresholded", frame)
+            lowerLimits = np.array([lH, lS, lV])
+            upperLimits = np.array([hH, hS, hV])
+            thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
+            cv2.imshow("Thresholded", thresholded)
+            if cv2.waitKey(1) & 0xFF == ord('y'):
+                np.save("BoardDetection/robotcrownlowerlimits.npy", lowerLimits)
+                np.save("BoardDetection/robotcrownupperlimits.npy", upperLimits)
+                break
+        cv2.destroyAllWindows()
+        cv2.namedWindow("Thresholded")
+        cv2.createTrackbar("lH", "Thresholded", np.load("BoardDetection/opponentcrownlowerlimits.npy")[0], 255, updatelH)
+        cv2.createTrackbar("lS", "Thresholded", np.load("BoardDetection/opponentcrownlowerlimits.npy")[1], 255, updatelS)
+        cv2.createTrackbar("lV", "Thresholded", np.load("BoardDetection/opponentcrownlowerlimits.npy")[2], 255, updatelV)
+        cv2.createTrackbar("hH", "Thresholded", np.load("BoardDetection/opponentcrownupperlimits.npy")[0], 255, updatehH)
+        cv2.createTrackbar("hS", "Thresholded", np.load("BoardDetection/opponentcrownupperlimits.npy")[1], 255, updatehS)
+        cv2.createTrackbar("hV", "Thresholded", np.load("BoardDetection/opponentcrownupperlimits.npy")[2], 255, updatehV)
+        print("Threshold the Opponent's Crowns")
+        while True:
+            frame = checkers_camera.current_chessboard_frame().img
+            cv2.imshow("unthresholded", frame)
+            lowerLimits = np.array([lH, lS, lV])
+            upperLimits = np.array([hH, hS, hV])
+            thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
+            cv2.imshow("Thresholded", thresholded)
+            if cv2.waitKey(1) & 0xFF == ord('y'):
+                np.save("BoardDetection/opponentcrownlowerlimits.npy", lowerLimits)
+                np.save("BoardDetection/opponentcrownupperlimits.npy", upperLimits)
+                break
 
     except KeyboardInterrupt:
         print("closing program")

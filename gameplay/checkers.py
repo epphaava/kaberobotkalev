@@ -39,9 +39,12 @@ class Checkers:
                 json.dump(self.best_moves[x], outfile)
 
         print("best moves: ", self.best_moves)
+        print(
+            "Kasutaja poolt vaadaatuna:\nEsimene number on vasakult kaamera poole loetuna 0-7, \nTeine number on paremalt vasakule loetuna 0-7")
         return self.best_moves
 
     def get_priority(self, x, y, is_crown):
+        print("tamm: ", is_crown)
         # kui tegemist tavalise nupuga
         if not is_crown:
             capture_priority = 1
@@ -107,34 +110,58 @@ class Checkers:
 
         # kui tegemist tammiga
         else:
+            print("kroonis sees")
             capture_priority = 1
-            top_left_priority = [1]
-            top_right_priority = [1]
+            top_left_priority = [1, 8, 8]
+            top_right_priority = [1, 8, 8]
+            bottom_left_priority = [1, 8, 8]
+            bottom_right_priority = [1, 8, 8]
 
-            captures = self.crown_captures(x, y)
+            captures = self.crown_captures(x, y, [])
+            print("capt; ", captures)
             if len(captures[0]) > 0:
                 capture_priority *= len(captures[0]) * 10 - captures[1]
 
             # give priority to safe moves
             i = 1
             while True:
+                print("whailis")
                 if self.is_position(x - i, y - i) and self.board[x - i][y - i] == '-' and self.is_safe(x - i, y - i,
                                                                                                        x - i + 1,
                                                                                                        y - i + 1):
-                    top_left_priority += 3
-                    top_left_priority.append(x - i)
-                    top_left_priority.append(y - i)
+                    print(top_left_priority[0])
+                    top_left_priority[0] += 3
+                    top_left_priority[1] = x - i
+                    top_left_priority[2] = y - i
                     break
                 if self.is_position(x - i, y + i) and self.board[x - i][y + i] == '-' and self.is_safe(x - i, y - i,
                                                                                                        x - i + 1,
                                                                                                        y - i - 1):
-                    top_right_priority.append(x - i)
-                    top_right_priority.append(x + 1)
-                    top_left_priority += 3
+                    top_right_priority[0] += 3
+                    top_right_priority[1] = x - i
+                    top_right_priority[2] = x + i
                     break
 
+                if self.is_position(x + i, y + i) and self.board[x + i][y + i] == '-' and self.is_safe(x + i, y + i,
+                                                                                                       x + i - 1,
+                                                                                                       y + i - 1):
+                    bottom_left_priority[1] = x + i
+                    bottom_left_priority[2] = x + i
+                    bottom_left_priority[0] += 3
+                    break
+
+                if self.is_position(x + i, y - i) and self.board[x + i][y - i] == '-' and self.is_safe(x + i, y + i,
+                                                                                                       x + i - 1,
+                                                                                                       y + i + 1):
+                    bottom_right_priority[1] = x - i
+                    bottom_right_priority[2] = x + i
+                    bottom_right_priority[0] += 3
+                    break
+            print("kohal")
+            print("variandid: ", capture_priority, top_left_priority[0], top_right_priority[0])
             # valime mis siis parim edasine tegevus
-            best_move = max(capture_priority, top_left_priority[0], top_right_priority[0])
+            best_move = max(capture_priority, top_left_priority[0], top_right_priority[0], bottom_right_priority[0],
+                            bottom_left_priority[0])
 
             # kui söömiste punktid paremad kui ükski priority score
             if best_move == capture_priority and best_move > self.best_priority_score:
@@ -170,12 +197,14 @@ class Checkers:
             if self.board[x - i][y - i] == 'p' and (self.board[x + 1][y + 1] == '-' or (x + 1 == prev_x and y + 1 ==
                                                                                         prev_y)):
                 return False
+            i += 1
 
         i = 1
         while self.is_position(x - i, y + i) and self.is_position(x + 1, y - 1):
             if self.board[x - i][y + i] == 'p' and (self.board[x + 1][y - 1] == '-' or (x + 1 == prev_x and y - 1 ==
                                                                                         prev_y)):
                 return False
+            i += 1
         return True
 
     # pikim roboti nuppude rida (diagonaal)
@@ -284,87 +313,131 @@ class Checkers:
 
         return self.chain_moves
 
-    def crown_can_capture(self, x, y, direction):
-        i = 1
+    def crown_can_capture(self, x, y, direction, already_captured):
+
+        abi = 1
         if direction == "top left":
-            while True:
-                if self.is_position(x - i, y - i) and self.is_position(x - i - 1, y - i - 1):
-                    if self.board[x - i][y - i] == 'o' and self.board[x - i - 1][y - i - 1] == '-':
-                        return [True, x - i - 1, y - i - 1]
-                    i += 1
-                else:
-                    break
+            while self.is_position(x - abi, y - abi) and self.is_position(x - abi - 1, y - abi - 1):
+                allowed = True
+                if self.board[x - abi][y - abi] == 'o' and self.board[x - abi - 1][y - abi - 1] == '-':
+                    for i in already_captured:
+                        if i[0] == x - abi and i[1] == y - abi:
+                            allowed = False
+                            break
+                    if allowed:
+                        already_captured.append([x - abi, y - abi])
+                        return [True, x - abi - 1, y - abi - 1, already_captured]
+                abi += 1
         elif direction == "top right":
-            while True:
-                if self.is_position(x - i, y + i) and self.is_position(x - i - 1, y + i + 1):
-                    if self.board[x - i][y + i] == 'o' and self.board[x - i - 1][y + i + 1] == '-':
-                        return [True, x - i - 1, y + i + 1]
-                    i += 1
-                else:
-                    break
+            while self.is_position(x - abi, y + abi) and self.is_position(x - abi - 1, y + abi + 1):
+                allowed = True
+                if self.board[x - abi][y + abi] == 'o' and self.board[x - abi - 1][y + abi + 1] == '-':
+                    for i in already_captured:
+                        if i[0] == x - abi and i[1] == y + abi:
+                            allowed = False
+                            break
+                    if allowed:
+                        already_captured.append([x - abi, y + abi])
+                        return [True, x - abi - 1, y + abi + 1, already_captured]
+                abi += 1
+        elif direction == "bottom left":
+            while self.is_position(x + abi, y + abi) and self.is_position(x + abi + 1, y + abi + 1):
+                allowed = True
+                if self.board[x + abi][y + abi] == 'o' and self.board[x + abi + 1][y + abi + 1] == '-':
+                    for i in already_captured:
+                        if i[0] == x + 1 and i[1] == y + 1:
+                            allowed = False
+                            break
+                    if allowed:
+                        already_captured.append([x + abi, y + abi])
+                        return [True, x + abi + 1, y + abi + 1, already_captured]
+                abi += 1
+        elif direction == "bottom right":
+            while self.is_position(x + abi, y - abi) and self.is_position(x + abi + 1, y - abi - 1):
+                allowed = True
+                if self.board[x + abi][y - abi] == 'o' and self.board[x + abi + 1][y - abi - 1] == '-':
+                    for i in already_captured:
+                        if i[0] == x + 1 and i[1] == y - 1:
+                            allowed = False
+                            break
+                    if allowed:
+                        already_captured.append([x + abi, y - abi])
+                        return [True, x + abi + 1, y - abi - 1, already_captured]
+                abi += 1
         return [False]
 
-    def crown_captures(self, x, y, moves=None):
+    def crown_captures(self, x, y, already_captured, moves=None):
         if moves is None:
             moves = [0, []]
-        left_capture = self.crown_can_capture(x, y, "top left")
-        right_capture = self.crown_can_capture(x, y, "top right")
-
-        # baas - ei saa süüa midagi
-        if not left_capture[0] and not right_capture[0]:
-            if moves[0] > self.longest_chain:
-                self.longest_chain = moves[0]
-                self.chain_moves = moves[1]
-            return self.chain_moves
-
-        # kui saab liikuda mõlemale poole
-        if left_capture[0] and right_capture[0]:
-
-            x_left = left_capture[1]
-            y_left = left_capture[2]
-
-            x_right = right_capture[1]
-            y_right = right_capture[2]
-
-            # vaatab kui palju saaks vasakule minnes võtta
-            # märgib, millisel positsioonil liigutatav nupp ja kuhu selle liigutama peab (kui minna selle käiguga)
-            self.crown_captures(x_left, y_left, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}] + [
-                                                     {"current_position": str(x_left + 1) + str(y_left + 1),
-                                                      "goal_position": "*remove"}]])
-            # kui palju saaks paremale minnes võtta
-            self.crown_captures(x_right, y_right, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}] + [
-                                                       {"current_position": str(x_right + 1) + str(y_right - 1),
-                                                        "goal_position": "*remove"}]])
-
-        # vaatleme ainult vasakule võtmist
-        elif left_capture[0]:
-            x_left = left_capture[1]
-            y_left = left_capture[2]
-
-            self.crown_captures(x_left, y_left, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}] + [
-                                                     {"current_position": str(x_left + 1) + str(y_left + 1),
-                                                      "goal_position": "*remove"}]])
-
-        # ainult paremale võtmist
-        elif right_capture[0]:
-            x_right = right_capture[1]
-            y_right = right_capture[2]
-
-            self.crown_captures(x_right, y_right, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}] + [
-                                                       {"current_position": str(x_right + 1) + str(y_right - 1),
-                                                        "goal_position": "*remove"}]])
+        top_left_capture = self.crown_can_capture(x, y, "top left", already_captured)
+        top_right_capture = self.crown_can_capture(x, y, "top right", already_captured)
+        bottom_left_capture = self.crown_can_capture(x, y, "bottom left", already_captured)
+        bottom_right_capture = self.crown_can_capture(x, y, "bottom right", already_captured)
 
         safety = 0
 
-        if left_capture[0]:
-            if not self.is_safe(left_capture[1], left_capture[2], left_capture[1] + 1, left_capture[2] + 1):
+        # baas - ei saa süüa midagi
+        if not top_left_capture[0] and not top_right_capture[0] and not bottom_right_capture[0] and not \
+                bottom_left_capture[0]:
+            self.longest_chain = moves[0]
+            self.chain_moves = moves[1]
+            return [self.chain_moves, safety]
+
+        # vaatleme ainult vasakule võtmist
+        if top_left_capture[0]:
+            x_left = top_left_capture[1]
+            y_left = top_left_capture[2]
+
+            self.crown_captures(x_left, y_left, already_captured, [moves[0] + 1, moves[1] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}] + [
+                                                                       {"current_position": str(x_left + 1) + str(
+                                                                           y_left + 1),
+                                                                        "goal_position": "*remove"}]])
+            if not self.is_safe(top_left_capture[1], top_left_capture[2], top_left_capture[1] + 1,
+                                top_left_capture[2] + 1):
                 safety = 3
-        elif right_capture[0]:
-            if not self.is_safe(right_capture[1], right_capture[2], right_capture[1] + 1, right_capture[2] - 1):
+
+        # ainult paremale võtmist
+        if top_right_capture[0]:
+            x_right = top_right_capture[1]
+            y_right = top_right_capture[2]
+
+            self.crown_captures(x_right, y_right, already_captured, [moves[0] + 1, moves[1] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}] + [
+                                                                         {"current_position": str(x_right + 1) + str(
+                                                                             y_right - 1),
+                                                                          "goal_position": "*remove"}]])
+            if not self.is_safe(top_right_capture[1], top_right_capture[2], top_right_capture[1] + 1,
+                                top_right_capture[2] - 1):
+                safety = 3
+
+        if bottom_left_capture[0]:
+            bottom_x_left = bottom_left_capture[1]
+            bottom_y_left = bottom_left_capture[2]
+
+            self.crown_captures(bottom_x_left, bottom_y_left, already_captured, [moves[0] + 1, moves[1] + [
+                {"current_position": str(x) + str(y), "goal_position": str(bottom_x_left) + str(bottom_y_left)}] + [
+                                                                                     {"current_position": str(
+                                                                                         bottom_x_left - 1) + str(
+                                                                                         bottom_y_left - 1),
+                                                                                      "goal_position": "*remove"}]])
+            if not self.is_safe(bottom_left_capture[1], bottom_left_capture[2], bottom_left_capture[1] + 1,
+                                bottom_left_capture[2] + 1):
+                safety = 3
+
+        # ainult paremale võtmist
+        if bottom_right_capture[0]:
+            bottom_x_right = bottom_right_capture[1]
+            bottom_y_right = bottom_right_capture[2]
+
+            self.crown_captures(bottom_x_right, bottom_y_right, already_captured, [moves[0] + 1, moves[1] + [
+                {"current_position": str(x) + str(y), "goal_position": str(bottom_x_right) + str(bottom_y_right)}] + [
+                                                                                       {"current_position": str(
+                                                                                           bottom_x_right - 1) + str(
+                                                                                           bottom_y_right + 1),
+                                                                                        "goal_position": "*remove"}]])
+            if not self.is_safe(bottom_right_capture[1], bottom_right_capture[2], bottom_right_capture[1] + 1,
+                                bottom_right_capture[2] - 1):
                 safety = 3
 
         return [self.chain_moves, safety]

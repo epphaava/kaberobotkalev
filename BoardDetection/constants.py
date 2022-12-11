@@ -3,14 +3,16 @@ import numpy as np
 BOARD_SIZE = 480
 SQUARE_SIZE = 60
 
-BLUE_LOW_VALUES = np.load("BoardDetection/bluelowerlimits.npy")
-BLUE_HIGH_VALUES = np.load("BoardDetection/blueupperlimits.npy")
+# roboti nuppude värvid
+ROBOT_LOW_VALUES = np.load("BoardDetection/robotlowerlimits.npy")
+ROBOT_HIGH_VALUES = np.load("BoardDetection/robotupperlimits.npy")
 
-RED_LOW_VALUES = np.load("BoardDetection/redlowerlimits.npy")
-RED_HIGH_VALUES = np.load("BoardDetection/redupperlimits.npy")
+# inimese nuppude värvid
+OPPONENT_LOW_VALUES = np.load("BoardDetection/opponentlowerlimits.npy")
+OPPONENT_HIGH_VALUES = np.load("BoardDetection/opponentupperlimits.npy")
 
-BLUE_CROWN_LOW_VALUES = np.array([37, 28, 142])
-BLUE_CROWN_HIGH_VALUES = np.array([96, 85, 188])
+ROBOT_CROWN_LOW_VALUES = np.load("BoardDetection/robotcrownlowerlimits.npy")
+ROBOT_CROWN_HIGH_VALUES = np.load("BoardDetection/robotcrownupperlimits.npy")
 
-RED_CROWN_LOW_VALUES = np.array([37, 28, 142])
-RED_CROWN_HIGH_VALUES = np.array([96, 85, 188])
+OPPONENT_CROWN_LOW_VALUES = np.load("BoardDetection/opponentcrownlowerlimits.npy")
+OPPONENT_CROWN_HIGH_VALUES = np.load("BoardDetection/opponentcrownupperlimits.npy")
