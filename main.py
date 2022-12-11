@@ -15,7 +15,7 @@ def init():
 
 
 def main():
-    #checkerscam = Camera(camera)
+    checkerscam = Camera(camera)
 
     while True:
         # camera is on the side of the robot, opposite the human player
@@ -32,8 +32,8 @@ def main():
         # press SPACE to get next move of robot
         elif k % 256 == 32:
             try:
-                #board = checkerscam.current_board()
-                #print(board)
+                board = checkerscam.current_board()
+                print(board)
                 next_turn.text_board()
             except Exception as e:
                 print("something went wrong ", e)

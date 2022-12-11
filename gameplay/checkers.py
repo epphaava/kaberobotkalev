@@ -71,10 +71,11 @@ class Checkers:
                 if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
                     top_right_priority += self.longest_line(x - 1, y + 1)
 
+                print(self.board[x - 1][y - 1], " ja ", x)
                 # crown
-                if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == 0 and x == 1:
+                if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and x == 1:
                     top_left_priority += 29
-                if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == 0 and x == 1:
+                if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and x == 1:
                     top_right_priority += 29
 
                 # which way is it safe to move
@@ -92,6 +93,7 @@ class Checkers:
                     top_right_priority += 1
 
                 best_move = max(top_left_priority, top_right_priority)
+
 
             if best_move == capture_priority and best_move > self.best_priority_score:
                 self.best_moves = captures
@@ -125,6 +127,7 @@ class Checkers:
                 # give priority to safe moves
                 i = 1
                 while True:
+                    print("whailis")
                     if self.is_position(x - i, y - i) and self.board[x - i][y - i] == '-' and self.is_safe(x - i, y - i,
                                                                                                            x - i + 1,
                                                                                                            y - i + 1):
@@ -136,6 +139,8 @@ class Checkers:
                     if self.is_position(x - i, y + i) and self.board[x - i][y + i] == '-' and self.is_safe(x - i, y - i,
                                                                                                            x - i + 1,
                                                                                                            y - i - 1):
+                        print(top_right_priority[0])
+
                         top_right_priority[0] += 3
                         top_right_priority[1] = x - i
                         top_right_priority[2] = x + i
@@ -144,6 +149,8 @@ class Checkers:
                     if self.is_position(x + i, y + i) and self.board[x + i][y + i] == '-' and self.is_safe(x + i, y + i,
                                                                                                            x + i - 1,
                                                                                                            y + i - 1):
+                        print(bottom_left_priority[0])
+
                         bottom_left_priority[1] = x + i
                         bottom_left_priority[2] = x + i
                         bottom_left_priority[0] += 3
@@ -152,10 +159,13 @@ class Checkers:
                     if self.is_position(x + i, y - i) and self.board[x + i][y - i] == '-' and self.is_safe(x + i, y + i,
                                                                                                            x + i - 1,
                                                                                                            y + i + 1):
+                        print(bottom_right_priority[0])
+
                         bottom_right_priority[1] = x - i
                         bottom_right_priority[2] = x + i
                         bottom_right_priority[0] += 3
                         break
+                    i += 1
 
                 best_move = max(top_left_priority[0], top_right_priority[0], bottom_right_priority[0],
                                 bottom_left_priority[0])
@@ -258,23 +268,27 @@ class Checkers:
     # is it possible to capture the opponent's piece in the given direction? (with a regular piece)
     def can_capture(self, x, y, direction):
         if direction == "top left":
-            if (self.is_position(x - 1, y - 1) and self.is_position(x - 2, y - 2) and self.board[x - 1][
-                y - 1] == 'o' and
+            if (self.is_position(x - 1, y - 1) and self.is_position(x - 2, y - 2) and (self.board[x - 1][
+                y - 1] == 'o' or self.board[x - 1][
+                y - 1] == 'p') and
                     self.board[x - 2][y - 2] == '-'):
                 return True
         elif direction == "top right":
-            if (self.is_position(x - 1, y + 1) and self.is_position(x - 2, y + 2) and self.board[x - 1][
-                y + 1] == 'o' and
+            if (self.is_position(x - 1, y + 1) and self.is_position(x - 2, y + 2) and (self.board[x - 1][
+                y + 1] == 'o' or self.board[x - 1][
+                y + 1] == 'p') and
                     self.board[x - 2][y + 2] == '-'):
                 return True
         elif direction == "bottom left":
-            if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and self.board[x + 1][
-                y + 1] == 'o' and
+            if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and (self.board[x + 1][
+                y + 1] == 'o' or self.board[x + 1][
+                y + 1] == 'p') and
                     self.board[x + 2][y + 2] == '-'):
                 return True
         elif direction == "bottom right":
-            if (self.is_position(x + 1, y - 1) and self.is_position(x + 2, y - 2) and self.board[x + 1][
-                y - 1] == 'o' and
+            if (self.is_position(x + 1, y - 1) and self.is_position(x + 2, y - 2) and (self.board[x + 1][
+                y - 1] == 'o' or self.board[x + 1][
+                y - 1] == 'p') and
                     self.board[x + 2][y - 2] == '-'):
                 return True
         return False

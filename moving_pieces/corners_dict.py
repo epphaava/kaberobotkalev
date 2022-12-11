@@ -1,3 +1,5 @@
+# SEDA VIST POLE VAJA, EI TEA MIS MA TEGELT MÕTLESIN SIIN
+
 def to_dict():
     f = open("corners.txt", "r")
     corners = f.read().split("\n")
