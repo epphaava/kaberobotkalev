@@ -44,73 +44,69 @@ class Checkers:
         return self.best_moves
 
     def get_priority(self, x, y, is_crown):
-        print("tamm: ", is_crown)
-        # kui tegemist tavalise nupuga
+
+        # if it is not a crown
         if not is_crown:
             capture_priority = 1
             top_left_priority = 1
             top_right_priority = 1
 
-            # hiljem valime priority score järgi:
+            # will make the best turn choice according to the priority score:
             # capture chain = 10*n
-            # crowning = 29 (kui kunagi otsustame seda teha)
+            # crowning = 29
             # keeping a line = 1 * n
             # safe moves
 
-            # leiame pikim käikude järjestuse
+            # find the longest chain of captures
             captures = self.captures(x, y)
             if len(captures) > 0:
                 capture_priority *= len(captures) * 10
+                best_move = capture_priority
+            else:
+                # find the longest diagonal of gamepieces
+                if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-':
+                    top_left_priority += self.longest_line(x - 1, y - 1)
+                if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
+                    top_right_priority += self.longest_line(x - 1, y + 1)
 
-            # leiame pikima nuppudest koosneva diagonaali
-            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-':
-                top_left_priority += self.longest_line(x - 1, y - 1)
-            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
-                top_right_priority += self.longest_line(x - 1, y + 1)
+                # crown
+                if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == 0 and x == 1:
+                    top_left_priority += 29
+                if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == 0 and x == 1:
+                    top_right_priority += 29
 
-            # tammiks saamine
-            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == 0 and x == 1:
-                top_left_priority += 29
-            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == 0 and x == 1:
-                top_right_priority += 29
+                # which way is it safe to move
+                if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and self.is_safe(x - 1, y - 1, x, y):
+                    top_left_priority += 3
+                if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and self.is_safe(x - 1, y + 1, x, y):
+                    top_right_priority += 3
 
-            # kuhu poole on safe liikuda, ei sööda ära
-            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and self.is_safe(x - 1, y - 1, x, y):
-                top_left_priority += 3
-            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and self.is_safe(x - 1, y + 1, x, y):
-                top_right_priority += 3
+                # give priority to middle of board moves
+                if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and 2 < y < 5:
+                    top_left_priority += 1
+                if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and 2 < y < 5:
+                    top_right_priority += 1
 
-            # give priority to middle of board moves
-            if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and 2 < y < 5:
-                top_left_priority += 1
-            if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-' and 2 < y < 5:
-                top_right_priority += 1
+                best_move = max(top_left_priority, top_right_priority)
 
-            best_move = max(capture_priority, top_left_priority, top_right_priority)
-
-            # kui söömiste punktid paremad kui ükski priority score
             if best_move == capture_priority and best_move > self.best_priority_score:
-                # siis captured on kõige parem järgmine käik
                 self.best_moves = captures
                 self.best_priority_score = capture_priority
 
-            # kui mõistlik liikuda vasakule
             elif best_move == top_left_priority and best_move > self.best_priority_score:
                 self.best_moves = [{"current_position": str(x) + str(y), "goal_position": str(x - 1) + str(y - 1)}]
                 if x == 1: self.best_moves.append(
                     {"current_position": str(x - 1) + str(y - 1), "goal_position": "*crown"})
                 self.best_priority_score = top_left_priority
 
-            # kui mõistlik liikuda paremale
             elif best_move == top_right_priority and best_move > self.best_priority_score:
                 self.best_moves = [{"current_position": str(x) + str(y), "goal_position": str(x - 1) + str(y + 1)}]
                 if x == 1: self.best_moves.append(
                     {"current_position": str(x - 1) + str(y + 1), "goal_position": "*crown"})
                 self.best_priority_score = top_right_priority
 
-        # kui tegemist tammiga
+        # if it is a crown
         else:
-            print("kroonis sees")
             capture_priority = 1
             top_left_priority = [1, 8, 8]
             top_right_priority = [1, 8, 8]
@@ -118,50 +114,47 @@ class Checkers:
             bottom_right_priority = [1, 8, 8]
 
             captures = self.crown_captures(x, y, [])
-            print("capt; ", captures)
             if len(captures[0]) > 0:
                 capture_priority *= len(captures[0]) * 10 - captures[1]
+                best_move = capture_priority
+            else:
+                # give priority to safe moves
+                i = 1
+                while True:
+                    if self.is_position(x - i, y - i) and self.board[x - i][y - i] == '-' and self.is_safe(x - i, y - i,
+                                                                                                           x - i + 1,
+                                                                                                           y - i + 1):
+                        print(top_left_priority[0])
+                        top_left_priority[0] += 3
+                        top_left_priority[1] = x - i
+                        top_left_priority[2] = y - i
+                        break
+                    if self.is_position(x - i, y + i) and self.board[x - i][y + i] == '-' and self.is_safe(x - i, y - i,
+                                                                                                           x - i + 1,
+                                                                                                           y - i - 1):
+                        top_right_priority[0] += 3
+                        top_right_priority[1] = x - i
+                        top_right_priority[2] = x + i
+                        break
 
-            # give priority to safe moves
-            i = 1
-            while True:
-                print("whailis")
-                if self.is_position(x - i, y - i) and self.board[x - i][y - i] == '-' and self.is_safe(x - i, y - i,
-                                                                                                       x - i + 1,
-                                                                                                       y - i + 1):
-                    print(top_left_priority[0])
-                    top_left_priority[0] += 3
-                    top_left_priority[1] = x - i
-                    top_left_priority[2] = y - i
-                    break
-                if self.is_position(x - i, y + i) and self.board[x - i][y + i] == '-' and self.is_safe(x - i, y - i,
-                                                                                                       x - i + 1,
-                                                                                                       y - i - 1):
-                    top_right_priority[0] += 3
-                    top_right_priority[1] = x - i
-                    top_right_priority[2] = x + i
-                    break
+                    if self.is_position(x + i, y + i) and self.board[x + i][y + i] == '-' and self.is_safe(x + i, y + i,
+                                                                                                           x + i - 1,
+                                                                                                           y + i - 1):
+                        bottom_left_priority[1] = x + i
+                        bottom_left_priority[2] = x + i
+                        bottom_left_priority[0] += 3
+                        break
 
-                if self.is_position(x + i, y + i) and self.board[x + i][y + i] == '-' and self.is_safe(x + i, y + i,
-                                                                                                       x + i - 1,
-                                                                                                       y + i - 1):
-                    bottom_left_priority[1] = x + i
-                    bottom_left_priority[2] = x + i
-                    bottom_left_priority[0] += 3
-                    break
+                    if self.is_position(x + i, y - i) and self.board[x + i][y - i] == '-' and self.is_safe(x + i, y + i,
+                                                                                                           x + i - 1,
+                                                                                                           y + i + 1):
+                        bottom_right_priority[1] = x - i
+                        bottom_right_priority[2] = x + i
+                        bottom_right_priority[0] += 3
+                        break
 
-                if self.is_position(x + i, y - i) and self.board[x + i][y - i] == '-' and self.is_safe(x + i, y + i,
-                                                                                                       x + i - 1,
-                                                                                                       y + i + 1):
-                    bottom_right_priority[1] = x - i
-                    bottom_right_priority[2] = x + i
-                    bottom_right_priority[0] += 3
-                    break
-            print("kohal")
-            print("variandid: ", capture_priority, top_left_priority[0], top_right_priority[0])
-            # valime mis siis parim edasine tegevus
-            best_move = max(capture_priority, top_left_priority[0], top_right_priority[0], bottom_right_priority[0],
-                            bottom_left_priority[0])
+                # valime mis siis parim edasine tegevus
+                best_move = max(top_left_priority[0], top_right_priority[0], bottom_right_priority[0], bottom_left_priority[0])
 
             # kui söömiste punktid paremad kui ükski priority score
             if best_move == capture_priority and best_move > self.best_priority_score:
@@ -190,6 +183,12 @@ class Checkers:
             return False
         if (self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == 'o' and self.is_position(x + 1, y - 1) and (
                 self.board[x + 1][y - 1] == '-' or (x + 1 == prev_x and y - 1 == prev_y))):
+            return False
+        if (self.is_position(x + 1, y + 1) and self.board[x + 1][y + 1] == 'o' and self.is_position(x - 1, y - 1) and (
+                self.board[x - 1][y - 1] == '-' or (x - 1 == prev_x and y - 1 == prev_y))):
+            return False
+        if (self.is_position(x + 1, y - 1) and self.board[x + 1][y - 1] == 'o' and self.is_position(x - 1, y + 1) and (
+                self.board[x - 1][y + 1] == '-' or (x - 1 == prev_x and y + 1 == prev_y))):
             return False
 
         i = 1
@@ -268,6 +267,16 @@ class Checkers:
                 y + 1] == 'o' and
                     self.board[x - 2][y + 2] == '-'):
                 return True
+        elif direction == "bottom left":
+            if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and self.board[x + 1][
+                y + 1] == 'o' and
+                    self.board[x + 2][y + 2] == '-'):
+                return True
+        elif direction == "bottom right":
+            if (self.is_position(x + 1, y - 1) and self.is_position(x + 2, y - 2) and self.board[x + 1][
+                y - 1] == 'o' and
+                    self.board[x + 2][y - 2] == '-'):
+                return True
         return False
 
     # kuhu liikudes saab süüa vastase nuppe (ja kui mitu järjest)
@@ -276,39 +285,33 @@ class Checkers:
         # baas - ei saa süüa midagi
         if moves is None:
             moves = [0, []]
-        if not self.can_capture(x, y, "top left") and not self.can_capture(x, y, "top right"):
+        if not self.can_capture(x, y, "top left") and not self.can_capture(x, y, "top right") and not self.can_capture(x, y, "bottom right") and not self.can_capture(x, y, "bottom right"):
             if moves[0] > self.longest_chain:
                 self.longest_chain = moves[0]
                 self.chain_moves = moves[1]
             return self.chain_moves
 
-        # kui saab liikuda mõlemale poole
-        if self.can_capture(x, y, "top left") and self.can_capture(x, y, "top right"):
-
-            # vaatab kui palju saaks vasakule minnes võtta
-            # märgib, millisel positsioonil liigutatav nupp ja kuhu selle liigutama peab (kui minna selle käiguga)
-            self.captures(x - 2, y - 2, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y - 2)}] + [
-                                             {"current_position": str(x - 1) + str(y - 1),
-                                              "goal_position": "*remove"}]])
-            # kui palju saaks paremale minnes võtta
-            self.captures(x - 2, y + 2, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y + 2)}] + [
-                                             {"current_position": str(x - 1) + str(y + 1),
-                                              "goal_position": "*remove"}]])
-
-        # vaatleme ainult vasakule võtmist
-        elif self.can_capture(x, y, "top left"):
+        if self.can_capture(x, y, "top left"):
             self.captures(x - 2, y - 2, [moves[0] + 1, moves[1] + [
                 {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y - 2)}] + [
                                              {"current_position": str(x - 1) + str(y - 1),
                                               "goal_position": "*remove"}]])
 
-        # ainult paremale võtmist
-        elif self.can_capture(x, y, "top right"):
+        if self.can_capture(x, y, "top right"):
             self.captures(x - 2, y + 2, [moves[0] + 1, moves[1] + [
                 {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y + 2)}] + [
                                              {"current_position": str(x - 1) + str(y + 1),
+                                              "goal_position": "*remove"}]])
+
+        if self.can_capture(x, y, "bottom left"):
+            self.captures(x + 2, y + 2, [moves[0] + 1, moves[1] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y + 2)}] + [
+                                             {"current_position": str(x + 1) + str(y + 1), "goal_position": "*remove"}]])
+
+        if self.can_capture(x, y, "bottom right"):
+            self.captures(x + 2, y - 2, [moves[0] + 1, moves[1] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y - 2)}] + [
+                                             {"current_position": str(x + 1) + str(y - 1),
                                               "goal_position": "*remove"}]])
 
         return self.chain_moves
