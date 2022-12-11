@@ -41,8 +41,11 @@ class Checkers:
                 json.dump(self.best_moves[x], outfile)
 
         print("best moves: ", self.best_moves)
-        print(
-            "Kasutaja poolt vaadaatuna:\nEsimene number on vasakult kaamera poole loetuna 0-7, \nTeine number on paremalt vasakule loetuna 0-7")
+
+        print(len(self.best_moves))
+        print(self.best_moves[0])
+        print(self.best_moves[0]['current_position'])
+        print("Kasutaja poolt vaadatuna:\nEsimene number on vasakult kaamera poole loetuna 0-7, \nTeine number on paremalt vasakule loetuna 0-7")
         return self.best_moves
 
     def get_priority(self, x, y, is_crown):
@@ -71,7 +74,6 @@ class Checkers:
                 if self.is_position(x - 1, y + 1) and self.board[x - 1][y + 1] == '-':
                     top_right_priority += self.longest_line(x - 1, y + 1)
 
-                print(self.board[x - 1][y - 1], " ja ", x)
                 # crown
                 if self.is_position(x - 1, y - 1) and self.board[x - 1][y - 1] == '-' and x == 1:
                     top_left_priority += 29
@@ -127,11 +129,9 @@ class Checkers:
                 # give priority to safe moves
                 i = 1
                 while True:
-                    print("whailis")
                     if self.is_position(x - i, y - i) and self.board[x - i][y - i] == '-' and self.is_safe(x - i, y - i,
                                                                                                            x - i + 1,
                                                                                                            y - i + 1):
-                        print(top_left_priority[0])
                         top_left_priority[0] += 3
                         top_left_priority[1] = x - i
                         top_left_priority[2] = y - i
@@ -139,7 +139,6 @@ class Checkers:
                     if self.is_position(x - i, y + i) and self.board[x - i][y + i] == '-' and self.is_safe(x - i, y - i,
                                                                                                            x - i + 1,
                                                                                                            y - i - 1):
-                        print(top_right_priority[0])
 
                         top_right_priority[0] += 3
                         top_right_priority[1] = x - i
@@ -149,7 +148,6 @@ class Checkers:
                     if self.is_position(x + i, y + i) and self.board[x + i][y + i] == '-' and self.is_safe(x + i, y + i,
                                                                                                            x + i - 1,
                                                                                                            y + i - 1):
-                        print(bottom_left_priority[0])
 
                         bottom_left_priority[1] = x + i
                         bottom_left_priority[2] = x + i
@@ -159,7 +157,6 @@ class Checkers:
                     if self.is_position(x + i, y - i) and self.board[x + i][y - i] == '-' and self.is_safe(x + i, y + i,
                                                                                                            x + i - 1,
                                                                                                            y + i + 1):
-                        print(bottom_right_priority[0])
 
                         bottom_right_priority[1] = x - i
                         bottom_right_priority[2] = x + i
@@ -308,27 +305,23 @@ class Checkers:
 
         if self.can_capture(x, y, "top left"):
             self.captures(x - 2, y - 2, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y - 2)}] + [
                                              {"current_position": str(x - 1) + str(y - 1),
-                                              "goal_position": "*remove"}]])
+                                              "goal_position": "*remove"}] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y - 2)}]])
 
         if self.can_capture(x, y, "top right"):
-            self.captures(x - 2, y + 2, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y + 2)}] + [
-                                             {"current_position": str(x - 1) + str(y + 1),
-                                              "goal_position": "*remove"}]])
+            self.captures(x - 2, y + 2, [moves[0] + 1, moves[1] + [{"current_position": str(x - 1) + str(y + 1),
+                                              "goal_position": "*remove"}] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y + 2)}]])
 
         if self.can_capture(x, y, "bottom left"):
-            self.captures(x + 2, y + 2, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y + 2)}] + [
-                                             {"current_position": str(x + 1) + str(y + 1),
-                                              "goal_position": "*remove"}]])
+            self.captures(x + 2, y + 2, [moves[0] + 1, moves[1] + [{"current_position": str(x + 1) + str(y + 1),
+                                              "goal_position": "*remove"}] + [{"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y + 2)}]])
 
         if self.can_capture(x, y, "bottom right"):
             self.captures(x + 2, y - 2, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y - 2)}] + [
                                              {"current_position": str(x + 1) + str(y - 1),
-                                              "goal_position": "*remove"}]])
+                                              "goal_position": "*remove"}] + [{"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y - 2)}]])
 
         return self.chain_moves
 
