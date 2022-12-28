@@ -51,7 +51,7 @@ def init():
 
 def main():
     try:
-        print("Seadista kaamera keskele")
+        print("Align the board with the cross")
         checkers_camera = Camera(camera)
         while True:
             frame = checkers_camera.current_raw_frame()
@@ -61,7 +61,7 @@ def main():
             cv2.imshow("center", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        print("Seadistame transform")
+        print("Confirm transformation")
         calibrate_camera(camera)
         while True:
             transformed = checkers_camera.current_chessboard_frame().img
@@ -84,7 +84,7 @@ def main():
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
             thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
-            cv2.imshow("Thresholded", thresholded)
+            cv2.imshow("Thresholded confirmation", thresholded)
             if cv2.waitKey(1) & 0xFF == ord('y'):
                 np.save("BoardDetection/robotlowerlimits.npy", lowerLimits)
                 np.save("BoardDetection/robotupperlimits.npy", upperLimits)
@@ -104,7 +104,7 @@ def main():
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
             thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
-            cv2.imshow("Thresholded", thresholded)
+            cv2.imshow("Thresholded confirmation", thresholded)
             if cv2.waitKey(1) & 0xFF == ord('y'):
                 np.save("BoardDetection/opponentlowerlimits.npy", lowerLimits)
                 np.save("BoardDetection/opponentupperlimits.npy", upperLimits)
@@ -124,7 +124,7 @@ def main():
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
             thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
-            cv2.imshow("Thresholded", thresholded)
+            cv2.imshow("Thresholded confirmation", thresholded)
             if cv2.waitKey(1) & 0xFF == ord('y'):
                 np.save("BoardDetection/robotcrownlowerlimits.npy", lowerLimits)
                 np.save("BoardDetection/robotcrownupperlimits.npy", upperLimits)
@@ -144,7 +144,7 @@ def main():
             lowerLimits = np.array([lH, lS, lV])
             upperLimits = np.array([hH, hS, hV])
             thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
-            cv2.imshow("Thresholded", thresholded)
+            cv2.imshow("Thresholded confirmation", thresholded)
             if cv2.waitKey(1) & 0xFF == ord('y'):
                 np.save("BoardDetection/opponentcrownlowerlimits.npy", lowerLimits)
                 np.save("BoardDetection/opponentcrownupperlimits.npy", upperLimits)
