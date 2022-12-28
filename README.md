@@ -1,6 +1,6 @@
-# Projekt- Kabet mängiv robot Kalev
+# Project - Kabet mängiv robot Kalev (Checkers Robot Kalev)
 
-## Projekti liikmed
+## Team members
 
 * Albert Unn
 * Karl Väärtnõu
@@ -15,7 +15,7 @@ We will try to build a special checkers board that has a moving electromagnet un
 We would like to build a 2 axis linear actuation system under the board, using two stepper motors. The system will be something akin to to 3d printers or cnc machines.
 The movement logic will be controlled by a computer that will read the board and position of the pieces from an overhead webcam. It is going to be able to recognise opponent movement and using that information calculate and execute its next move.
 
-## Projekti komponentide nimekiri
+## List of Necessary Components
 
 | Item | Link to the item | We will provide | Need from instructors | 3D print | Total |
 | ---- | ---------------- | --------------: | --------------------: | -------: | :---: |
@@ -32,4 +32,4 @@ The movement logic will be controlled by a computer that will read the board and
 
 <https://trello.com/invite/b/72wEh3fa/ATTI96578b2b7e0681afb163ae4c90d2dfa2F54F2999/project-board>
 
-## Projekti juhendaja- Eva Mõtshärg
+## Project instructor - Eva Mõtshärg
