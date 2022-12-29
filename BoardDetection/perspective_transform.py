@@ -5,7 +5,7 @@ from itertools import product
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
-perspective_transform_path = "checkersboard_perspective_transform.npy"
+perspective_transform_path = "BoardDetection/checkersboard_perspective_transform.npy"
 
 
 def get_checkersboard_perspective_transform():
@@ -15,7 +15,6 @@ def get_checkersboard_perspective_transform():
     except IOError:
         print("need to calibrate camera")
 
-
 def calibrate_camera(camera):
     board_size = (7, 7)
     _, frame = camera.read()
@@ -24,9 +23,12 @@ def calibrate_camera(camera):
                                                flags=cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_ADAPTIVE_THRESH)
     if found:
         z = corners.reshape((49, 2))
-        cv2.drawChessboardCorners(frame, board_size, corners, found)
-        cv2.waitKey(0)
         print(z)
+
+        f = open("./moving_pieces/corners.txt", "w")
+        f.writelines([f"{line}\n" for line in z])
+        f.close()
+
         p = []
         q = []
         p.append(z[0])
@@ -45,6 +47,7 @@ def calibrate_camera(camera):
         p = np.array(p, np.float32).reshape(q.shape)
         m = cv2.getPerspectiveTransform(p, q)
         np.save(perspective_transform_path, m)
+
 
 
 def main():
