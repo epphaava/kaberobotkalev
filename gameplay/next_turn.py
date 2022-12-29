@@ -24,7 +24,7 @@ def board_array():
 
     # from the perspective of the robot / camera
     # first number is the index counting top to bottom
-    # second number is the index conting from left to right
+    # second number is the index counting from left to right
 
     return state
 
