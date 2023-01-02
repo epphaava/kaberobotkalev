@@ -1,5 +1,7 @@
 import math
 
+import serial
+
 # use this method to move the piece through corners to the given destination in best_moves
 
 # this method assumes the removed pieces will be on the right side of the board
@@ -19,14 +21,15 @@ import math
 
 magnet_current_position = 77
 
-def move(best_moves, piece):
 
+def move(best_moves, piece):
     global magnet_current_position
 
     moves = []
 
     if len(best_moves) == 0:
         print("no possible moves! game over :(")
+
 
     # if only one move to make
     elif len(best_moves) == 1 and piece == "regular":
@@ -73,7 +76,7 @@ def move(best_moves, piece):
                 # in both cases the piece needs to be moved off the board
                 # currently the crown has to be added by hand as we don't know where we could keep the crown pieces
                 moves.append('3')
-                for i in range(math.ceil((7 - current_position % 10)/2)):
+                for i in range(math.ceil((7 - current_position % 10) / 2)):
                     moves.append('2')
                     moves.append('4')
             else:
@@ -108,9 +111,9 @@ def move(best_moves, piece):
         moves.append('9')
         return moves
 
+
 def magnet_to_current_position(goal_position, moves):
     global magnet_current_position
-
 
     current_row = magnet_current_position
     current_column = magnet_current_position % 10
@@ -140,5 +143,12 @@ def magnet_to_current_position(goal_position, moves):
     moves.append('8')
 
 
-if __name__ == "__main__":
-    move([], "regular")
+def physically_moving(best_moves, piece):
+    baudRate = 9600
+    ser = serial.Serial("COM4", baudRate)
+    moves = move(best_moves, piece)
+
+    for i in moves:
+        command = i
+        ser.write(command.encode('utf-8'))
+    ser.close()
