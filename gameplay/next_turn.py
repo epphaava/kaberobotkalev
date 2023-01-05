@@ -1,8 +1,10 @@
 #!/usr/bin/python
 import numpy as np
 import gameplay.checkers as checkers
-from moving_the_pieces import physically_moving
-from checkers import Checkers
+import gameplay.moving_the_pieces
+from gameplay import moving_the_pieces
+from gameplay import checkers
+from gameplay.checkers import Checkers
 
 # creating the two arrays current and next position will be stored in
 current_state = np.array([[0 for col in range(8)] for row in range(8)])
@@ -40,7 +42,7 @@ def text_board():
     current_board = checkers.Checkers(current_state)
     info = current_board.get_next_move()
 
-    physically_moving(info, checkers.Checkers.get_piece(Checkers))
+    moving_the_pieces.physically_moving(info, current_board.get_piece())
 
 
 if __name__ == "__main__":
