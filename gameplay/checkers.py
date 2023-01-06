@@ -65,7 +65,7 @@ class Checkers:
             # safe moves
 
             # find the longest chain of captures
-            captures = self.captures(x, y)
+            captures = self.captures(x, y, [])
             if len(captures) > 0:
                 capture_priority *= len(captures) * 10
                 best_move = capture_priority
@@ -267,23 +267,35 @@ class Checkers:
         return False
 
     # is it possible to capture the opponent's piece in the given direction? (with a regular piece)
-    def can_capture(self, x, y, direction):
+    def can_capture(self, x, y, direction, already_captured):
+        allowed = True
         if direction == "top left":
             if (self.is_position(x - 1, y - 1) and self.is_position(x - 2, y - 2) and (self.board[x - 1][
                                                                                            y - 1] == 'o' or
                                                                                        self.board[x - 1][
                                                                                            y - 1] == 'p') and
                     self.board[x - 2][y - 2] == '-'):
-                return True
+                for i in already_captured:
+                    if i[0] == x - 1 and i[1] == y - 1:
+                        allowed = False
+                        break
+                if allowed:
+                    already_captured.append([x - 1, y - 1])
+                    return True
         elif direction == "top right":
             if (self.is_position(x - 1, y + 1) and self.is_position(x - 2, y + 2) and (self.board[x - 1][
                                                                                            y + 1] == 'o' or
                                                                                        self.board[x - 1][
                                                                                            y + 1] == 'p') and
                     self.board[x - 2][y + 2] == '-'):
-                return True
+                for i in already_captured:
+                    if i[0] == x - 1 and i[1] == y + 1:
+                        allowed = False
+                        break
+                if allowed:
+                    already_captured.append([x - 1, y + 1])
+                    return True
         elif direction == "bottom left":
-            return False
 
             # in this game it is not allowed for a regular piece to remove a piece moving back
             if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and (self.board[x + 1][
@@ -291,50 +303,62 @@ class Checkers:
                                                                                        self.board[x + 1][
                                                                                            y + 1] == 'p') and
                     self.board[x + 2][y + 2] == '-'):
-                return True
+
+                for i in already_captured:
+                    if i[0] == x + 1 and i[1] == y + 1:
+                        allowed = False
+                        break
+                if allowed:
+                    already_captured.append([x + 1, y + 1])
+                    return True
         elif direction == "bottom right":
-            return False
             if (self.is_position(x + 1, y - 1) and self.is_position(x + 2, y - 2) and (self.board[x + 1][
                                                                                            y - 1] == 'o' or
                                                                                        self.board[x + 1][
                                                                                            y - 1] == 'p') and
                     self.board[x + 2][y - 2] == '-'):
-                return True
+                for i in already_captured:
+                    if i[0] == x + 1 and i[1] == y - 1:
+                        allowed = False
+                        break
+                if allowed:
+                    already_captured.append([x + 1, y - 1])
+                    return True
         return False
 
     # in which direction is it possible to capture pieces and how many at once (with a regular piece)
-    def captures(self, x, y, moves=None):
+    def captures(self, x, y, already_captured, moves=None):
 
         # base - cannot capture anything
         if moves is None:
             moves = [0, []]
-        if not self.can_capture(x, y, "top left") and not self.can_capture(x, y, "top right") and not self.can_capture(
-                x, y, "bottom right") and not self.can_capture(x, y, "bottom right"):
+        if not self.can_capture(x, y, already_captured, "top left") and not self.can_capture(x, y, already_captured, "top right") and not self.can_capture(
+                x, y, already_captured,  "bottom right") and not self.can_capture(x, y, already_captured, "bottom right"):
             if moves[0] > self.longest_chain:
                 self.longest_chain = moves[0]
                 self.chain_moves = moves[1]
             return self.chain_moves
 
-        if self.can_capture(x, y, "top left"):
+        if self.can_capture(x, y, "top left", already_captured):
             self.captures(x - 2, y - 2, [moves[0] + 1, moves[1] + [
                 {"current_position": str(x - 1) + str(y - 1),
                  "goal_position": "*remove"}] + [
-                                             {"current_position": str(x) + str(y),
-                                              "goal_position": str(x - 2) + str(y - 2)}]])
+                                              {"current_position": str(x) + str(y),
+                                               "goal_position": str(x - 2) + str(y - 2)}]])
 
-        if self.can_capture(x, y, "top right"):
+        if self.can_capture(x, y, already_captured, "top right"):
             self.captures(x - 2, y + 2, [moves[0] + 1, moves[1] + [{"current_position": str(x - 1) + str(y + 1),
-                                                                    "goal_position": "*remove"}] + [
-                                             {"current_position": str(x) + str(y),
-                                              "goal_position": str(x - 2) + str(y + 2)}]])
+                                                                     "goal_position": "*remove"}] + [
+                                              {"current_position": str(x) + str(y),
+                                               "goal_position": str(x - 2) + str(y + 2)}]])
 
-        if self.can_capture(x, y, "bottom left"):
+        if self.can_capture(x, y, "bottom left", already_captured):
             self.captures(x + 2, y + 2, [moves[0] + 1, moves[1] + [{"current_position": str(x + 1) + str(y + 1),
-                                                                    "goal_position": "*remove"}] + [
-                                             {"current_position": str(x) + str(y),
-                                              "goal_position": str(x + 2) + str(y + 2)}]])
+                                                                     "goal_position": "*remove"}] + [
+                                              {"current_position": str(x) + str(y),
+                                               "goal_position": str(x + 2) + str(y + 2)}]])
 
-        if self.can_capture(x, y, "bottom right"):
+        if self.can_capture(x, y, already_captured, "bottom right"):
             self.captures(x + 2, y - 2, [moves[0] + 1, moves[1] + [
                 {"current_position": str(x + 1) + str(y - 1),
                  "goal_position": "*remove"}] + [{"current_position": str(x) + str(y),
@@ -423,11 +447,11 @@ class Checkers:
             x_left = top_left_capture[1]
             y_left = top_left_capture[2]
 
-            self.crown_captures(x_left, y_left, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}] + [
+            self.crown_captures(x_left, y_left, already_captured, [moves[0] + 1, moves[1]  + [
                                                                        {"current_position": str(x_left + 1) + str(
                                                                            y_left + 1),
-                                                                        "goal_position": "*remove"}]])
+                                                                        "goal_position": "*remove"}] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}]])
             if not self.is_safe(top_left_capture[1], top_left_capture[2], top_left_capture[1] + 1,
                                 top_left_capture[2] + 1):
                 safety = 3
@@ -437,10 +461,10 @@ class Checkers:
             y_right = top_right_capture[2]
 
             self.crown_captures(x_right, y_right, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}] + [
                                                                          {"current_position": str(x_right + 1) + str(
                                                                              y_right - 1),
-                                                                          "goal_position": "*remove"}]])
+                                                                          "goal_position": "*remove"}] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}]])
             if not self.is_safe(top_right_capture[1], top_right_capture[2], top_right_capture[1] + 1,
                                 top_right_capture[2] - 1):
                 safety = 3
