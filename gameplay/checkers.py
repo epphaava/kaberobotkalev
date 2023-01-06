@@ -424,10 +424,10 @@ class Checkers:
             y_left = top_left_capture[2]
 
             self.crown_captures(x_left, y_left, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}] + [
                                                                        {"current_position": str(x_left + 1) + str(
                                                                            y_left + 1),
-                                                                        "goal_position": "*remove"}]])
+                                                                        "goal_position": "*remove"}] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}]])
             if not self.is_safe(top_left_capture[1], top_left_capture[2], top_left_capture[1] + 1,
                                 top_left_capture[2] + 1):
                 safety = 3
@@ -437,10 +437,10 @@ class Checkers:
             y_right = top_right_capture[2]
 
             self.crown_captures(x_right, y_right, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}] + [
                                                                          {"current_position": str(x_right + 1) + str(
                                                                              y_right - 1),
-                                                                          "goal_position": "*remove"}]])
+                                                                          "goal_position": "*remove"}] + [
+                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}]])
             if not self.is_safe(top_right_capture[1], top_right_capture[2], top_right_capture[1] + 1,
                                 top_right_capture[2] - 1):
                 safety = 3

@@ -20,7 +20,7 @@ def main():
     checkerscam = Camera(camera)
 
     baudRate = 9600
-    ser = serial.Serial("COM7 ", baudRate)
+    ser = serial.Serial("COM6", baudRate)
     time.sleep(2)
     ret, frame = camera.read()
     next_turn.calibrate(ser, checkerscam)
@@ -41,7 +41,6 @@ def main():
                 board = checkerscam.current_board()
                 print(board)
                 next_turn.text_board(ser)
-                time.sleep(10)
                 next_turn.calibrate(ser, checkerscam)
             except Exception as e:
                 #print("something went wrong ", e)

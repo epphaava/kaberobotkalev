@@ -187,8 +187,8 @@ def calibrate(ser, camera):
     for i in range(int(7 - magnet_current_position // 10)):
         ser.write('4'.encode('utf-8'))
     detector = cv2.SimpleBlobDetector_create()
-    lowerlimits = np.load(r"C:\Users\eppha\robootika\kaberobotkalev\BoardDetection\robotlowerlimits.npy")
-    upperlimits = np.load(r"C:\Users\eppha\robootika\kaberobotkalev\BoardDetection\robotupperlimits.npy")
+    lowerlimits = np.load(r"C:\Users\vaart\PycharmProjects\kaberobotkalev\BoardDetection\robotlowerlimits.npy")
+    upperlimits = np.load(r"C:\Users\vaart\PycharmProjects\kaberobotkalev\BoardDetection\robotupperlimits.npy")
     x = False
     y = False
     while True:
@@ -213,15 +213,15 @@ def calibrate(ser, camera):
 
         print(magnet_x)
         print(magnet_y)
-        if magnet_x < frame_x - 5:
+        if magnet_x < frame_x - 4:
             ser.write("d".encode("utf-8"))
-        elif magnet_x > frame_x + 5:
+        elif magnet_x > frame_x + 4:
             ser.write("a".encode("utf-8"))
         else:
             x = True
-        if magnet_y < frame_y - 5:
+        if magnet_y < frame_y - 4:
             ser.write("s".encode("utf-8"))
-        elif magnet_y > frame_y + 5:
+        elif magnet_y > frame_y + 4:
             ser.write("w".encode("utf-8"))
         else:
             y = True
