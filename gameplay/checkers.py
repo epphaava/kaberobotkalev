@@ -284,6 +284,8 @@ class Checkers:
                 return True
         elif direction == "bottom left":
             return False
+
+            # in this game it is not allowed for a regular piece to remove a piece moving back
             if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and (self.board[x + 1][
                                                                                            y + 1] == 'o' or
                                                                                        self.board[x + 1][
@@ -448,11 +450,9 @@ class Checkers:
             bottom_y_left = bottom_left_capture[2]
 
             self.crown_captures(bottom_x_left, bottom_y_left, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(bottom_x_left) + str(bottom_y_left)}] + [
-                                                                                     {"current_position": str(
-                                                                                         bottom_x_left - 1) + str(
-                                                                                         bottom_y_left - 1),
-                                                                                      "goal_position": "*remove"}]])
+                {"current_position": str(bottom_x_left - 1) + str(bottom_y_left - 1), "goal_position": "*remove"}]] + [
+                                    {"current_position": str(x) + str(y),
+                                     "goal_position": str(bottom_x_left) + str(bottom_y_left)}])
             if not self.is_safe(bottom_left_capture[1], bottom_left_capture[2], bottom_left_capture[1] + 1,
                                 bottom_left_capture[2] + 1):
                 safety = 3
@@ -462,11 +462,9 @@ class Checkers:
             bottom_y_right = bottom_right_capture[2]
 
             self.crown_captures(bottom_x_right, bottom_y_right, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(bottom_x_right) + str(bottom_y_right)}] + [
-                                                                                       {"current_position": str(
-                                                                                           bottom_x_right - 1) + str(
-                                                                                           bottom_y_right + 1),
-                                                                                        "goal_position": "*remove"}]])
+                {"current_position": str(bottom_x_right - 1) + str(bottom_y_right + 1), "goal_position": "*remove"}]
+                                                                                   + [{"current_position": str(x) + str(
+                y), "goal_position": str(bottom_x_right) + str(bottom_y_right)}]])
             if not self.is_safe(bottom_right_capture[1], bottom_right_capture[2], bottom_right_capture[1] + 1,
                                 bottom_right_capture[2] - 1):
                 safety = 3

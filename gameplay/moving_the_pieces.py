@@ -28,8 +28,6 @@ magnet_current_position = 73
 def move(move, piece):
     global magnet_current_position
 
-    being_removed = False
-
     moves = []
 
     current_position = int(move['current_position'])
@@ -38,7 +36,7 @@ def move(move, piece):
     magnet_to_current_position(current_position, moves)
 
 
-    if goal_position == "*crown" or goal_position == "*remove":
+    if goal_position == "*remove":
 
 
 
@@ -70,15 +68,30 @@ def move(move, piece):
 
 
         # if moving back (possible if it is a crown)
-        else:
-            if current_column > goal_column:
+    elif piece == "*crown":
+
+        current_row = int(current_position) // 10
+        current_column = int(current_position) % 10
+
+        goal_row = int(goal_position) // 10
+        goal_column = int(goal_position) % 10
+
+        if current_column < goal_column:
+            if current_row > goal_row:
+                for i in range(abs(goal_column - current_column)):
+                    moves.append('1')
+            else:
                 for i in range(abs(goal_column - current_column)):
                     moves.append('5')
+        else:
+            if current_row > goal_row:
+                for i in range(abs(goal_column - current_column)):
+                    moves.append('7')
             else:
-                for i in range(abs(current_column - goal_column)):
+                for i in range(abs(goal_column - current_column)):
                     moves.append('3')
 
-    # turn magnet off
+# turn magnet off
 
     moves.append('f')
     return moves
