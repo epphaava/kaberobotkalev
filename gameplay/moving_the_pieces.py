@@ -58,14 +58,21 @@ def move(move, piece):
         goal_column = int(goal_position) % 10
 
         # if the piece is moving forward
-        if current_row > goal_row:
-            if current_column < goal_column:
+
+        if current_column < goal_column:
+            if current_row > goal_row:
                 for i in range(abs(goal_column - current_column)):
                     moves.append('1')
             else:
-                for i in range(abs(current_column - goal_column)):
+                for i in range(abs(goal_column - current_column)):
+                    moves.append('5')
+        else:
+            if current_row > goal_row:
+                for i in range(abs(goal_column - current_column)):
                     moves.append('7')
-
+            else:
+                for i in range(abs(goal_column - current_column)):
+                    moves.append('3')
 
         # if moving back (possible if it is a crown)
     elif piece == "*crown":
