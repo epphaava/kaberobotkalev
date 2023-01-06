@@ -283,6 +283,7 @@ class Checkers:
                     self.board[x - 2][y + 2] == '-'):
                 return True
         elif direction == "bottom left":
+            return False
             if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and (self.board[x + 1][
                                                                                            y + 1] == 'o' or
                                                                                        self.board[x + 1][
@@ -290,6 +291,7 @@ class Checkers:
                     self.board[x + 2][y + 2] == '-'):
                 return True
         elif direction == "bottom right":
+            return False
             if (self.is_position(x + 1, y - 1) and self.is_position(x + 2, y - 2) and (self.board[x + 1][
                                                                                            y - 1] == 'o' or
                                                                                        self.board[x + 1][

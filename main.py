@@ -3,6 +3,8 @@ import time
 import cv2
 from BoardDetection.camera import Camera
 import gameplay.next_turn as next_turn
+import serial
+
 
 camera = cv2.VideoCapture
 BOARD_SIZE = 480
@@ -17,6 +19,11 @@ def init():
 def main():
     checkerscam = Camera(camera)
 
+    baudRate = 9600
+    ser = serial.Serial("COM7 ", baudRate)
+    time.sleep(2)
+    ret, frame = camera.read()
+    next_turn.calibrate(ser, checkerscam)
     while True:
         # camera is on the side of the robot, opposite the human player
         ret, frame = camera.read()
@@ -28,18 +35,20 @@ def main():
         if k % 256 == 27:
             print("Escape hit, closing...")
             break
-
         # press SPACE to get next move of robot
         elif k % 256 == 32:
             try:
                 board = checkerscam.current_board()
                 print(board)
-                next_turn.text_board()
+                next_turn.text_board(ser)
+                time.sleep(10)
+                next_turn.calibrate(ser, checkerscam)
             except Exception as e:
                 #print("something went wrong ", e)
                 raise e
 
     camera.release()
+    ser.close()
     cv2.destroyAllWindows()
 
 

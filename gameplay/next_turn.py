@@ -1,10 +1,13 @@
 #!/usr/bin/python
+import time
+
+import cv2
 import numpy as np
-import gameplay.checkers as checkers
-import gameplay.moving_the_pieces
-from gameplay import moving_the_pieces
+
 from gameplay import checkers
-from gameplay.checkers import Checkers
+from gameplay import moving_the_pieces
+
+from gameplay.moving_the_pieces import magnet_current_position
 
 # creating the two arrays current and next position will be stored in
 current_state = np.array([[0 for col in range(8)] for row in range(8)])
@@ -33,7 +36,7 @@ def board_array():
     return state
 
 
-def text_board():
+def text_board(ser):
     global current_state
 
     # get the state of the board as a matrix
@@ -42,8 +45,12 @@ def text_board():
     current_board = checkers.Checkers(current_state)
     info = current_board.get_next_move()
 
-    moving_the_pieces.physically_moving(info, current_board.get_piece())
+    moving_the_pieces.physically_moving(info, current_board.get_piece(), ser)
 
 
 if __name__ == "__main__":
     text_board()
+
+
+def calibrate(ser,camera):
+    moving_the_pieces.calibrate(ser,camera)

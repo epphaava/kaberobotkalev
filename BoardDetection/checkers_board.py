@@ -10,6 +10,8 @@ class Square:
     def __init__(self, position, raw_img):
         self.position = position
         self.img = raw_img
+    def get_img(self):
+        return self.img
 
 
 class CheckersBoard():
