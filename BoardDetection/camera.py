@@ -1,7 +1,7 @@
 import cv2
 
 from BoardDetection.checkers_board import CheckersBoard
-from BoardDetection.constants import BOARD_SIZE, ROBOT_LOW_VALUES, ROBOT_HIGH_VALUES, OPPONENT_LOW_VALUES, \
+from BoardDetection.variables.constants import BOARD_SIZE, ROBOT_LOW_VALUES, ROBOT_HIGH_VALUES, OPPONENT_LOW_VALUES, \
     OPPONENT_HIGH_VALUES, OPPONENT_CROWN_LOW_VALUES, OPPONENT_CROWN_HIGH_VALUES, ROBOT_CROWN_HIGH_VALUES, \
     ROBOT_CROWN_LOW_VALUES
 from BoardDetection.perspective_transform import get_checkersboard_perspective_transform

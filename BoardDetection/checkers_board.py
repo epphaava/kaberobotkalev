@@ -1,15 +1,14 @@
 from math import floor
 
-from BoardDetection.constants import BOARD_SIZE
-from BoardDetection.constants import SQUARE_SIZE
-import numpy as np
-import cv2
+from BoardDetection.variables.constants import SQUARE_SIZE
 
 
 class Square:
     def __init__(self, position, raw_img):
         self.position = position
         self.img = raw_img
+    def get_img(self):
+        return self.img
 
 
 class CheckersBoard():

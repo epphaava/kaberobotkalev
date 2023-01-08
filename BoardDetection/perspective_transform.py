@@ -1,9 +1,5 @@
-import numpy as np
 import cv2
-from itertools import product
-
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
 
 perspective_transform_path = "BoardDetection/checkersboard_perspective_transform.npy"
 
@@ -23,12 +19,6 @@ def calibrate_camera(camera):
                                                flags=cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_ADAPTIVE_THRESH)
     if found:
         z = corners.reshape((49, 2))
-        print(z)
-
-        f = open("./moving_pieces/corners.txt", "w")
-        f.writelines([f"{line}\n" for line in z])
-        f.close()
-
         p = []
         q = []
         p.append(z[0])

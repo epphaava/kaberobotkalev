@@ -35,17 +35,14 @@ class Checkers:
 
         while os.path.isfile("./moves/" + str(file_num) + ".json"):
             file_num += 1
-        print("move nr. ", file_num)
         for x in range(len(self.best_moves)):
             with open('./moves/' + str(file_num + x) + ".json", 'w') as outfile:
                 json.dump(self.best_moves[x], outfile)
 
-        print("best moves: ", self.best_moves)
+        print("moves: ", self.best_moves)
 
-        print(len(self.best_moves))
-        print(self.best_moves[0])
-        print(self.best_moves[0]['current_position'])
-        print("Kasutaja poolt vaadatuna:\nEsimene number on vasakult kaamera poole loetuna 0-7, \nTeine number on paremalt vasakule loetuna 0-7")
+        print(
+            "Kasutaja poolt vaadatuna:\nEsimene number on vasakult kaamera poole loetuna 0-7, \nTeine number on paremalt vasakule loetuna 0-7")
         return self.best_moves
 
     def get_priority(self, x, y, is_crown):
@@ -96,7 +93,6 @@ class Checkers:
 
                 best_move = max(top_left_priority, top_right_priority)
 
-
             if best_move == capture_priority and best_move > self.best_priority_score:
                 self.best_moves = captures
                 self.best_priority_score = capture_priority
@@ -139,7 +135,6 @@ class Checkers:
                     if self.is_position(x - i, y + i) and self.board[x - i][y + i] == '-' and self.is_safe(x - i, y - i,
                                                                                                            x - i + 1,
                                                                                                            y - i - 1):
-
                         top_right_priority[0] += 3
                         top_right_priority[1] = x - i
                         top_right_priority[2] = x + i
@@ -148,7 +143,6 @@ class Checkers:
                     if self.is_position(x + i, y + i) and self.board[x + i][y + i] == '-' and self.is_safe(x + i, y + i,
                                                                                                            x + i - 1,
                                                                                                            y + i - 1):
-
                         bottom_left_priority[1] = x + i
                         bottom_left_priority[2] = x + i
                         bottom_left_priority[0] += 3
@@ -157,7 +151,6 @@ class Checkers:
                     if self.is_position(x + i, y - i) and self.board[x + i][y - i] == '-' and self.is_safe(x + i, y + i,
                                                                                                            x + i - 1,
                                                                                                            y + i + 1):
-
                         bottom_right_priority[1] = x - i
                         bottom_right_priority[2] = x + i
                         bottom_right_priority[0] += 3
@@ -266,26 +259,36 @@ class Checkers:
     def can_capture(self, x, y, direction):
         if direction == "top left":
             if (self.is_position(x - 1, y - 1) and self.is_position(x - 2, y - 2) and (self.board[x - 1][
-                y - 1] == 'o' or self.board[x - 1][
-                y - 1] == 'p') and
+                                                                                           y - 1] == 'o' or
+                                                                                       self.board[x - 1][
+                                                                                           y - 1] == 'p') and
                     self.board[x - 2][y - 2] == '-'):
                 return True
         elif direction == "top right":
             if (self.is_position(x - 1, y + 1) and self.is_position(x - 2, y + 2) and (self.board[x - 1][
-                y + 1] == 'o' or self.board[x - 1][
-                y + 1] == 'p') and
+                                                                                           y + 1] == 'o' or
+                                                                                       self.board[x - 1][
+                                                                                           y + 1] == 'p') and
                     self.board[x - 2][y + 2] == '-'):
                 return True
         elif direction == "bottom left":
+            return False
+
+            # in this game it is not allowed for a regular piece to remove a piece moving back
+            # however if we could add the list of already removed pieces that are already in the crown function
+            # this would allow us to remove backwards as well
             if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and (self.board[x + 1][
-                y + 1] == 'o' or self.board[x + 1][
-                y + 1] == 'p') and
+                                                                                           y + 1] == 'o' or
+                                                                                       self.board[x + 1][
+                                                                                           y + 1] == 'p') and
                     self.board[x + 2][y + 2] == '-'):
                 return True
         elif direction == "bottom right":
+            return False
             if (self.is_position(x + 1, y - 1) and self.is_position(x + 2, y - 2) and (self.board[x + 1][
-                y - 1] == 'o' or self.board[x + 1][
-                y - 1] == 'p') and
+                                                                                           y - 1] == 'o' or
+                                                                                       self.board[x + 1][
+                                                                                           y - 1] == 'p') and
                     self.board[x + 2][y - 2] == '-'):
                 return True
         return False
@@ -305,23 +308,28 @@ class Checkers:
 
         if self.can_capture(x, y, "top left"):
             self.captures(x - 2, y - 2, [moves[0] + 1, moves[1] + [
-                                             {"current_position": str(x - 1) + str(y - 1),
-                                              "goal_position": "*remove"}] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y - 2)}]])
+                {"current_position": str(x - 1) + str(y - 1),
+                 "goal_position": "*remove"}] + [
+                                             {"current_position": str(x) + str(y),
+                                              "goal_position": str(x - 2) + str(y - 2)}]])
 
         if self.can_capture(x, y, "top right"):
             self.captures(x - 2, y + 2, [moves[0] + 1, moves[1] + [{"current_position": str(x - 1) + str(y + 1),
-                                              "goal_position": "*remove"}] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x - 2) + str(y + 2)}]])
+                                                                    "goal_position": "*remove"}] + [
+                                             {"current_position": str(x) + str(y),
+                                              "goal_position": str(x - 2) + str(y + 2)}]])
 
         if self.can_capture(x, y, "bottom left"):
             self.captures(x + 2, y + 2, [moves[0] + 1, moves[1] + [{"current_position": str(x + 1) + str(y + 1),
-                                              "goal_position": "*remove"}] + [{"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y + 2)}]])
+                                                                    "goal_position": "*remove"}] + [
+                                             {"current_position": str(x) + str(y),
+                                              "goal_position": str(x + 2) + str(y + 2)}]])
 
         if self.can_capture(x, y, "bottom right"):
             self.captures(x + 2, y - 2, [moves[0] + 1, moves[1] + [
-                                             {"current_position": str(x + 1) + str(y - 1),
-                                              "goal_position": "*remove"}] + [{"current_position": str(x) + str(y), "goal_position": str(x + 2) + str(y - 2)}]])
+                {"current_position": str(x + 1) + str(y - 1),
+                 "goal_position": "*remove"}] + [{"current_position": str(x) + str(y),
+                                                  "goal_position": str(x + 2) + str(y - 2)}]])
 
         return self.chain_moves
 
@@ -332,7 +340,8 @@ class Checkers:
         if direction == "top left":
             while self.is_position(x - variable, y - variable) and self.is_position(x - variable - 1, y - variable - 1):
                 allowed = True
-                if self.board[x - variable][y - variable] == 'o' and self.board[x - variable - 1][y - variable - 1] == '-':
+                if self.board[x - variable][y - variable] == 'o' and self.board[x - variable - 1][
+                    y - variable - 1] == '-':
                     for i in already_captured:
                         if i[0] == x - variable and i[1] == y - variable:
                             allowed = False
@@ -344,7 +353,8 @@ class Checkers:
         elif direction == "top right":
             while self.is_position(x - variable, y + variable) and self.is_position(x - variable - 1, y + variable + 1):
                 allowed = True
-                if self.board[x - variable][y + variable] == 'o' and self.board[x - variable - 1][y + variable + 1] == '-':
+                if self.board[x - variable][y + variable] == 'o' and self.board[x - variable - 1][
+                    y + variable + 1] == '-':
                     for i in already_captured:
                         if i[0] == x - variable and i[1] == y + variable:
                             allowed = False
@@ -356,7 +366,8 @@ class Checkers:
         elif direction == "bottom left":
             while self.is_position(x + variable, y + variable) and self.is_position(x + variable + 1, y + variable + 1):
                 allowed = True
-                if self.board[x + variable][y + variable] == 'o' and self.board[x + variable + 1][y + variable + 1] == '-':
+                if self.board[x + variable][y + variable] == 'o' and self.board[x + variable + 1][
+                    y + variable + 1] == '-':
                     for i in already_captured:
                         if i[0] == x + 1 and i[1] == y + 1:
                             allowed = False
@@ -368,7 +379,8 @@ class Checkers:
         elif direction == "bottom right":
             while self.is_position(x + variable, y - variable) and self.is_position(x + variable + 1, y - variable - 1):
                 allowed = True
-                if self.board[x + variable][y - variable] == 'o' and self.board[x + variable + 1][y - variable - 1] == '-':
+                if self.board[x + variable][y - variable] == 'o' and self.board[x + variable + 1][
+                    y - variable - 1] == '-':
                     for i in already_captured:
                         if i[0] == x + 1 and i[1] == y - 1:
                             allowed = False
@@ -403,10 +415,10 @@ class Checkers:
             y_left = top_left_capture[2]
 
             self.crown_captures(x_left, y_left, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}] + [
-                                                                       {"current_position": str(x_left + 1) + str(
-                                                                           y_left + 1),
-                                                                        "goal_position": "*remove"}]])
+                {"current_position": str(x_left + 1) + str(
+                    y_left + 1),
+                 "goal_position": "*remove"}] + [{"current_position": str(x) + str(y),
+                                                  "goal_position": str(x_left) + str(y_left)}]])
             if not self.is_safe(top_left_capture[1], top_left_capture[2], top_left_capture[1] + 1,
                                 top_left_capture[2] + 1):
                 safety = 3
@@ -416,10 +428,12 @@ class Checkers:
             y_right = top_right_capture[2]
 
             self.crown_captures(x_right, y_right, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}] + [
-                                                                         {"current_position": str(x_right + 1) + str(
-                                                                             y_right - 1),
-                                                                          "goal_position": "*remove"}]])
+                {"current_position": str(x_right + 1) + str(
+                    y_right - 1),
+                 "goal_position": "*remove"}] + [
+                                                                         {"current_position": str(x) + str(y),
+                                                                          "goal_position": str(x_right) + str(
+                                                                              y_right)}]])
             if not self.is_safe(top_right_capture[1], top_right_capture[2], top_right_capture[1] + 1,
                                 top_right_capture[2] - 1):
                 safety = 3
@@ -429,11 +443,12 @@ class Checkers:
             bottom_y_left = bottom_left_capture[2]
 
             self.crown_captures(bottom_x_left, bottom_y_left, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(bottom_x_left) + str(bottom_y_left)}] + [
-                                                                                     {"current_position": str(
-                                                                                         bottom_x_left - 1) + str(
-                                                                                         bottom_y_left - 1),
-                                                                                      "goal_position": "*remove"}]])
+                {"current_position": str(bottom_x_left - 1) + str(bottom_y_left - 1), "goal_position": "*remove"}] + [
+                                                                                     {"current_position": str(x) + str(
+                                                                                         y),
+                                                                                      "goal_position": str(
+                                                                                          bottom_x_left) + str(
+                                                                                          bottom_y_left)}]])
             if not self.is_safe(bottom_left_capture[1], bottom_left_capture[2], bottom_left_capture[1] + 1,
                                 bottom_left_capture[2] + 1):
                 safety = 3
@@ -443,11 +458,9 @@ class Checkers:
             bottom_y_right = bottom_right_capture[2]
 
             self.crown_captures(bottom_x_right, bottom_y_right, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(x) + str(y), "goal_position": str(bottom_x_right) + str(bottom_y_right)}] + [
-                                                                                       {"current_position": str(
-                                                                                           bottom_x_right - 1) + str(
-                                                                                           bottom_y_right + 1),
-                                                                                        "goal_position": "*remove"}]])
+                {"current_position": str(bottom_x_right - 1) + str(bottom_y_right + 1), "goal_position": "*remove"}]
+                                                                                   + [{"current_position": str(x) + str(
+                y), "goal_position": str(bottom_x_right) + str(bottom_y_right)}]])
             if not self.is_safe(bottom_right_capture[1], bottom_right_capture[2], bottom_right_capture[1] + 1,
                                 bottom_right_capture[2] - 1):
                 safety = 3

@@ -1,23 +1,12 @@
-import time
-
 import cv2
-import numpy as np
-from itertools import product
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from scipy.spatial.distance import euclidean
 
 from BoardDetection.camera import Camera
-from BoardDetection.checkers_board import CheckersBoard
 
 camera = cv2.VideoCapture
-BOARD_SIZE = 480
-SQUARE_SIZE = 60
-
 
 def init():
     global camera
-    camera = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 def main():
     try:
