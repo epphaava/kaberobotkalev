@@ -4,23 +4,21 @@ import cv2
 from BoardDetection.camera import Camera
 import gameplay.next_turn as next_turn
 import serial
-
+from BoardDetection.variables.constants import camera_index
+from BoardDetection.variables.constants import arduino_com
 
 camera = cv2.VideoCapture
-BOARD_SIZE = 480
-SQUARE_SIZE = 60
-
 
 def init():
     global camera
-    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    camera = cv2.VideoCapture(camera_index, cv2.CAP_DSHOW)
 
 
 def main():
     checkerscam = Camera(camera)
 
-    baudRate = 9600
-    ser = serial.Serial("COM6", baudRate)
+    baud_rate = 9600
+    ser = serial.Serial(arduino_com, baud_rate)
     time.sleep(2)
     ret, frame = camera.read()
     next_turn.calibrate(ser, checkerscam)
@@ -43,8 +41,7 @@ def main():
                 next_turn.text_board(ser)
                 next_turn.calibrate(ser, checkerscam)
             except Exception as e:
-                #print("something went wrong ", e)
-                raise e
+                print("something went wrong ", e)
 
     camera.release()
     ser.close()

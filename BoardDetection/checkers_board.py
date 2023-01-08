@@ -1,9 +1,6 @@
 from math import floor
 
-from BoardDetection.constants import BOARD_SIZE
-from BoardDetection.constants import SQUARE_SIZE
-import numpy as np
-import cv2
+from BoardDetection.variables.constants import SQUARE_SIZE
 
 
 class Square:

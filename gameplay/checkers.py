@@ -13,10 +13,6 @@ class Checkers:
         self.chain_moves = []
         self.best_moves = []
         self.best_priority_score = 0
-        self.piece = "regular"
-
-    def get_piece(self):
-        return self.piece
 
     # get the current position of the piece and the goal position where it should be moved
     def get_next_move(self):
@@ -39,12 +35,11 @@ class Checkers:
 
         while os.path.isfile("./moves/" + str(file_num) + ".json"):
             file_num += 1
-        print("move nr. ", file_num)
         for x in range(len(self.best_moves)):
             with open('./moves/' + str(file_num + x) + ".json", 'w') as outfile:
                 json.dump(self.best_moves[x], outfile)
 
-        print("best moves: ", self.best_moves)
+        print("moves: ", self.best_moves)
 
         print(
             "Kasutaja poolt vaadatuna:\nEsimene number on vasakult kaamera poole loetuna 0-7, \nTeine number on paremalt vasakule loetuna 0-7")
@@ -101,21 +96,18 @@ class Checkers:
             if best_move == capture_priority and best_move > self.best_priority_score:
                 self.best_moves = captures
                 self.best_priority_score = capture_priority
-                self.piece = "regular"
 
             elif best_move == top_left_priority and best_move > self.best_priority_score:
                 self.best_moves = [{"current_position": str(x) + str(y), "goal_position": str(x - 1) + str(y - 1)}]
                 if x == 1: self.best_moves.append(
                     {"current_position": str(x - 1) + str(y - 1), "goal_position": "*crown"})
                 self.best_priority_score = top_left_priority
-                self.piece = "regular"
 
             elif best_move == top_right_priority and best_move > self.best_priority_score:
                 self.best_moves = [{"current_position": str(x) + str(y), "goal_position": str(x - 1) + str(y + 1)}]
                 if x == 1: self.best_moves.append(
                     {"current_position": str(x - 1) + str(y + 1), "goal_position": "*crown"})
                 self.best_priority_score = top_right_priority
-                self.piece = "regular"
 
         # if it is a crown
         else:
@@ -171,19 +163,16 @@ class Checkers:
             if best_move == capture_priority and best_move > self.best_priority_score:
                 self.best_moves = captures[0]
                 self.best_priority_score = capture_priority
-                self.piece = "crown"
 
             elif best_move == top_left_priority[0] and best_move > self.best_priority_score:
                 self.best_moves = [{"current_position": str(x) + str(y),
                                     "goal_position": str(top_left_priority[1]) + str(top_right_priority[1])}]
                 self.best_priority_score = top_left_priority[0]
-                self.piece = "crown"
 
             elif best_move == top_right_priority[0] and best_move > self.best_priority_score:
                 self.best_moves = [{"current_position": str(x) + str(y),
                                     "goal_position": str(top_right_priority[1]) + str(top_right_priority[2])}]
                 self.best_priority_score = top_right_priority[0]
-                self.piece = "crown"
 
         return self.best_moves
 
@@ -286,6 +275,8 @@ class Checkers:
             return False
 
             # in this game it is not allowed for a regular piece to remove a piece moving back
+            # however if we could add the list of already removed pieces that are already in the crown function
+            # this would allow us to remove backwards as well
             if (self.is_position(x + 1, y + 1) and self.is_position(x + 2, y + 2) and (self.board[x + 1][
                                                                                            y + 1] == 'o' or
                                                                                        self.board[x + 1][
@@ -424,10 +415,10 @@ class Checkers:
             y_left = top_left_capture[2]
 
             self.crown_captures(x_left, y_left, already_captured, [moves[0] + 1, moves[1] + [
-                                                                       {"current_position": str(x_left + 1) + str(
-                                                                           y_left + 1),
-                                                                        "goal_position": "*remove"}] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_left) + str(y_left)}]])
+                {"current_position": str(x_left + 1) + str(
+                    y_left + 1),
+                 "goal_position": "*remove"}] + [{"current_position": str(x) + str(y),
+                                                  "goal_position": str(x_left) + str(y_left)}]])
             if not self.is_safe(top_left_capture[1], top_left_capture[2], top_left_capture[1] + 1,
                                 top_left_capture[2] + 1):
                 safety = 3
@@ -437,10 +428,12 @@ class Checkers:
             y_right = top_right_capture[2]
 
             self.crown_captures(x_right, y_right, already_captured, [moves[0] + 1, moves[1] + [
-                                                                         {"current_position": str(x_right + 1) + str(
-                                                                             y_right - 1),
-                                                                          "goal_position": "*remove"}] + [
-                {"current_position": str(x) + str(y), "goal_position": str(x_right) + str(y_right)}]])
+                {"current_position": str(x_right + 1) + str(
+                    y_right - 1),
+                 "goal_position": "*remove"}] + [
+                                                                         {"current_position": str(x) + str(y),
+                                                                          "goal_position": str(x_right) + str(
+                                                                              y_right)}]])
             if not self.is_safe(top_right_capture[1], top_right_capture[2], top_right_capture[1] + 1,
                                 top_right_capture[2] - 1):
                 safety = 3
@@ -450,9 +443,12 @@ class Checkers:
             bottom_y_left = bottom_left_capture[2]
 
             self.crown_captures(bottom_x_left, bottom_y_left, already_captured, [moves[0] + 1, moves[1] + [
-                {"current_position": str(bottom_x_left - 1) + str(bottom_y_left - 1), "goal_position": "*remove"}]] + [
-                                    {"current_position": str(x) + str(y),
-                                     "goal_position": str(bottom_x_left) + str(bottom_y_left)}])
+                {"current_position": str(bottom_x_left - 1) + str(bottom_y_left - 1), "goal_position": "*remove"}] + [
+                                                                                     {"current_position": str(x) + str(
+                                                                                         y),
+                                                                                      "goal_position": str(
+                                                                                          bottom_x_left) + str(
+                                                                                          bottom_y_left)}]])
             if not self.is_safe(bottom_left_capture[1], bottom_left_capture[2], bottom_left_capture[1] + 1,
                                 bottom_left_capture[2] + 1):
                 safety = 3

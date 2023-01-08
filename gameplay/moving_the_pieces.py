@@ -5,8 +5,6 @@ import numpy as np
 
 # use this method to move the piece through corners to the given destination in best_moves
 
-# this method assumes the removed pieces will be on the right side of the board
-
 # from the perspective of the robot
 # 7 - forward and left
 # 0 - forward
@@ -20,12 +18,11 @@ import numpy as np
 # 9 - magnet ON
 # 8 - magnet OFF
 
-# MOVEMENT FINISHED
+# f - MOVEMENT FINISHED
 
 magnet_current_position = 73
 
-
-def move(move, piece):
+def move(move):
     global magnet_current_position
 
     moves = []
@@ -35,47 +32,23 @@ def move(move, piece):
 
     magnet_to_current_position(current_position, moves)
 
-
     if goal_position == "*remove":
-
-
-
-        # switch regular piece for a crown or remove a piece
-        # in both cases the piece needs to be moved off the board
-        # currently the crown has to be added by hand as we don't know where we could keep the crown pieces
+        # the removed piece will be moved to the white square next to it
         moves.append('2')
-        #for i in range(math.ceil((current_position // 10) / 2)):
+
+        # if it is possible to move between other pieces without taking them with the magnet
+        # for i in range(math.ceil((current_position // 10) / 2)):
         #    moves.append('1')
         #    moves.append('7')
 
-    # if only one move to make
-    elif piece == "regular":
-
+    else:
         current_row = int(current_position) // 10
         current_column = int(current_position) % 10
 
         goal_row = int(goal_position) // 10
         goal_column = int(goal_position) % 10
 
-        # if the piece is moving forward
-        if current_row > goal_row:
-            if current_column < goal_column:
-                for i in range(abs(goal_column - current_column)):
-                    moves.append('1')
-            else:
-                for i in range(abs(current_column - goal_column)):
-                    moves.append('7')
-
-
-        # if moving back (possible if it is a crown)
-    elif piece == "*crown":
-
-        current_row = int(current_position) // 10
-        current_column = int(current_position) % 10
-
-        goal_row = int(goal_position) // 10
-        goal_column = int(goal_position) % 10
-
+        # moving to the left
         if current_column < goal_column:
             if current_row > goal_row:
                 for i in range(abs(goal_column - current_column)):
@@ -83,6 +56,7 @@ def move(move, piece):
             else:
                 for i in range(abs(goal_column - current_column)):
                     moves.append('5')
+        # moving to the right
         else:
             if current_row > goal_row:
                 for i in range(abs(goal_column - current_column)):
@@ -91,9 +65,9 @@ def move(move, piece):
                 for i in range(abs(goal_column - current_column)):
                     moves.append('3')
 
-# turn magnet off
-
+    # turn magnet off
     moves.append('f')
+
     return moves
 
 
@@ -115,7 +89,6 @@ def magnet_to_current_position(goal_position, moves):
         for i in range(abs(current_row - goal_row)):
             moves.append('4')
 
-
     # if moving right
     if current_column < goal_column:
         for i in range(abs(goal_column - current_column)):
@@ -130,13 +103,11 @@ def magnet_to_current_position(goal_position, moves):
 
 
 def physically_moving(best_moves, piece, ser):
-
     global magnet_current_position
 
-
-    print (f"magnetpos: {magnet_current_position}")
+    print(f"magnet's current position: {magnet_current_position}")
     for i in range(len(best_moves)):
-        moves = move(best_moves[i], piece)
+        moves = move(best_moves[i])
         # 7 - forward and left
         # 0 - forward
         # 1 - forward and right
@@ -168,11 +139,12 @@ def physically_moving(best_moves, piece, ser):
 
         print(moves)
 
-        for i in moves:
-            command = i
-            ser.write(command.encode('utf-8'))
-        time.sleep(5)
+        # for i in moves:
+        #    command = i
+        #    ser.write(command.encode('utf-8'))
+        # time.sleep(5)
 
+# function for calibrating the location of the magnet
 def calibrate(ser, camera):
     global magnet_current_position
 
@@ -187,8 +159,8 @@ def calibrate(ser, camera):
     for i in range(int(7 - magnet_current_position // 10)):
         ser.write('4'.encode('utf-8'))
     detector = cv2.SimpleBlobDetector_create()
-    lowerlimits = np.load(r"C:\Users\vaart\PycharmProjects\kaberobotkalev\BoardDetection\robotlowerlimits.npy")
-    upperlimits = np.load(r"C:\Users\vaart\PycharmProjects\kaberobotkalev\BoardDetection\robotupperlimits.npy")
+    lowerlimits = np.load(r".\BoardDetection\variables\robotlowerlimits.npy")
+    upperlimits = np.load(r".\BoardDetection\variables\robotupperlimits.npy")
     x = False
     y = False
     while True:
@@ -211,8 +183,6 @@ def calibrate(ser, camera):
         magnet_x = keypoints[0].pt[0]
         magnet_y = keypoints[0].pt[1]
 
-        print(magnet_x)
-        print(magnet_y)
         if magnet_x < frame_x - 4:
             ser.write("d".encode("utf-8"))
         elif magnet_x > frame_x + 4:
@@ -228,7 +198,6 @@ def calibrate(ser, camera):
         time.sleep(0.5)
         if y and x:
             ser.write("0".encode("utf-8"))
-            print("lopp")
             break
 
     magnet_current_position = 63
